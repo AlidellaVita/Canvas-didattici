@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>La Sinusoide in Gradi - y = sin(x)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      background: transparent;
+    }
+    input[type=range]:focus {
+      outline: none;
+    }
+    input[type=range]::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 8px;
+      cursor: pointer;
+      background: #334155;
+      border-radius: 9999px;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      height: 24px;
+      width: 24px;
+      border-radius: 50%;
+      background: #38bdf8;
+      cursor: pointer;
+      -webkit-appearance: none;
+      margin-top: -8px;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+      border: 2px solid #ffffff;
+    }
+    canvas {
+      touch-action: none;
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans antialiased">
+
+  <!-- Header con selettore modalità -->
+  <header class="bg-slate-900/90 backdrop-blur border-b border-slate-800 sticky top-0 z-40 px-3 py-2.5 sm:px-4 sm:py-3">
+    <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2.5">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-sky-500/20 border border-sky-400/40 flex items-center justify-center text-sky-400 font-bold text-base">
+          ∼
+        </div>
+        <div>
+          <h1 class="text-base sm:text-lg font-bold tracking-tight text-white flex items-center gap-1.5">
+            La Sinusoide: <span class="text-emerald-400">y = sin(x)</span>
+          </h1>
+        </div>
+      </div>
+
+      <!-- Tasti Modalità -->
+      <div class="grid grid-cols-2 gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 w-full sm:w-auto">
+        <button id="tabExploreBtn" onclick="switchMode('explore')" class="px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-sky-600 text-white flex items-center justify-center gap-1.5 shadow">
+          <span>🔍</span> Esplorazione Libera
+        </button>
+        <button id="tabChallengeBtn" onclick="switchMode('challenge')" class="px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5">
+          <span>🎯</span> Sfida "Becca i Gradi"
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-5xl w-full mx-auto p-2.5 sm:p-4 flex flex-col gap-3">
+
+    <!-- Card Valori Chiave in Primo Piano -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-2">
+        <span class="text-[11px] uppercase tracking-wider text-slate-400 block font-semibold">Angolo x</span>
+        <span id="displayDeg" class="text-xl sm:text-2xl font-black text-sky-400 font-mono">0°</span>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-2">
+        <span class="text-[11px] uppercase tracking-wider text-slate-400 block font-semibold">Altezza Seno y</span>
+        <span id="displaySin" class="text-xl sm:text-2xl font-black text-emerald-400 font-mono">0.000</span>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-2">
+        <span class="text-[11px] uppercase tracking-wider text-slate-400 block font-semibold">Quadrante</span>
+        <span id="displayQuad" class="text-base sm:text-xl font-bold text-amber-400">1° (0° - 90°)</span>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-2 flex items-center justify-center">
+        <button id="btnPlay" onclick="togglePlay()" class="w-full h-full py-1.5 px-3 rounded-lg bg-sky-500 hover:bg-sky-400 active:scale-95 text-slate-950 font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition">
+          <span id="playIcon">▶</span>
+          <span id="playLabel">Avvia Animazione</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Pannello Sfida (visibile solo in modalità sfida) -->
+    <div id="challengeBox" class="hidden bg-amber-950/30 border border-amber-600/50 rounded-2xl p-3 sm:p-4 flex flex-col gap-2.5 shadow-lg">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <span class="bg-amber-500 text-slate-950 font-black text-xs px-2.5 py-0.5 rounded-md uppercase tracking-wide">
+            Domanda <span id="chCurrentStep">1</span>/5
+          </span>
+          <span class="text-xs text-amber-200/80">Punteggio: <strong id="chScore" class="text-amber-300 font-bold text-sm">0</strong> p.ti</span>
+        </div>
+        <button onclick="newChallengeQuestion()" class="text-xs text-amber-300 underline hover:text-amber-100">
+          Salta domanda
+        </button>
+      </div>
+
+      <div class="bg-slate-950/70 p-3 rounded-xl border border-amber-700/40 text-center">
+        <p class="text-xs text-slate-300 uppercase font-semibold">Obiettivo da raggiungere:</p>
+        <p id="targetPrompt" class="text-base sm:text-lg font-black text-amber-300 mt-0.5">
+          Trova un angolo con sin(x) = 0.50
+        </p>
+      </div>
+
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-2">
+        <div id="challengeFeedback" class="text-xs text-slate-300 font-medium">
+          Muovi il raggio o il cursore in basso per raggiungere il valore, poi clicca Verifica.
+        </div>
+        <button onclick="verifyChallengeAnswer()" class="w-full sm:w-auto px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 active:scale-95 text-slate-950 font-bold text-sm transition shadow-md">
+          ✓ Verifica Posizione
+        </button>
+      </div>
+    </div>
+
+    <!-- CANVAS SINCRONIZZATO (Circonferenza + Sinusoide) -->
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-2 sm:p-3 shadow-xl">
+      <div class="relative w-full aspect-[4/3] sm:aspect-[2.1/1] bg-slate-950 rounded-xl overflow-hidden border border-slate-800">
+        <canvas id="synchroCanvas" class="w-full h-full block cursor-crosshair"></canvas>
+      </div>
+    </div>
+
+    <!-- Barra Slider Angolo in Gradi -->
+    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3 sm:p-4 shadow-xl flex flex-col gap-2.5">
+      <div class="flex items-center justify-between text-xs sm:text-sm">
+        <label for="degreeSlider" class="font-bold text-slate-200 flex items-center gap-1.5">
+          <span class="w-2.5 h-2.5 rounded-full bg-sky-400"></span>
+          Regola Angolo (0° - 360°):
+        </label>
+        <span id="sliderValueBadge" class="font-mono text-sky-400 font-bold bg-sky-950 px-2 py-0.5 rounded border border-sky-800 text-sm">
+          0°
+        </span>
+      </div>
+
+      <input id="degreeSlider" type="range" min="0" max="360" step="1" value="0" class="w-full">
+
+      <!-- Tacche notevoli graduate sull'asse dell'input -->
+      <div class="flex justify-between text-[11px] font-mono text-slate-400 px-1 pt-0.5">
+        <span class="text-sky-300 font-bold">0°</span>
+        <span>90°</span>
+        <span>180°</span>
+        <span>270°</span>
+        <span class="text-sky-300 font-bold">360°</span>
+      </div>
+
+      <!-- Scatti rapidi per angoli notevoli -->
+      <div class="pt-2 border-t border-slate-800/80">
+        <span class="text-[11px] text-slate-400 font-semibold block mb-1.5">Scatti rapidi angoli notevoli:</span>
+        <div class="flex flex-wrap gap-1 sm:gap-1.5">
+          <button onclick="setDegree(0)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 active:scale-95 rounded text-xs font-mono font-medium text-slate-200">0°</button>
+          <button onclick="setDegree(30)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 active:scale-95 rounded text-xs font-mono font-medium text-slate-200">30°</button>
+          <button onclick="setDegree(45)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 active:scale-95 rounded text-xs font-mono font-medium text-slate-200">45°</button>
+          <button onclick="setDegree(60)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 active:scale-95 rounded text-xs font-mono font-medium text-slate-200">60°</button>
+          <button onclick="setDegree(90)" class="px-2 py-1 bg-sky-900/60 hover:bg-sky-800 text-sky-300 active:scale-95 rounded text-xs font-mono font-bold">90°</button>
+          <button onclick="setDegree(120)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 active:scale-95 rounded text-xs font-mono font-medium text-slate-200">120°</button>
+          <button onclick="setDegree(135)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 active:scale-95 rounded text-xs font-mono font-medium text-slate-200">135°</button>
+          <button onclick="setDegree(150)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 active:scale-95 rounded text-xs font-mono font-medium text-slate-200">150°</button>
+          <button onclick="setDegree(180)" class="px-2 py-1 bg-sky-900/60 hover:bg-sky-800 text-sky-300 active:scale-95 rounded text-xs font-mono font-bold">180°</button>
+          <button onclick="setDegree(210)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 active:scale-95 rounded text-xs font-mono font-medium text-slate-200">210°</button>
+          <button onclick="setDegree(225)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 active:scale-95 rounded text-xs font-mono font-medium text-slate-200">225°</button>
+          <button onclick="setDegree(240)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 active:scale-95 rounded text-xs font-mono font-medium text-slate-200">240°</button>
+          <button onclick="setDegree(270)" class="px-2 py-1 bg-sky-900/60 hover:bg-sky-800 text-sky-300 active:scale-95 rounded text-xs font-mono font-bold">270°</button>
+          <button onclick="setDegree(300)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 active:scale-95 rounded text-xs font-mono font-medium text-slate-200">300°</button>
+          <button onclick="setDegree(315)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 active:scale-95 rounded text-xs font-mono font-medium text-slate-200">315°</button>
+          <button onclick="setDegree(330)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 active:scale-95 rounded text-xs font-mono font-medium text-slate-200">330°</button>
+          <button onclick="setDegree(360)" class="px-2 py-1 bg-sky-900/60 hover:bg-sky-800 text-sky-300 active:scale-95 rounded text-xs font-mono font-bold">360°</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Guida didattica per gli studenti -->
+    <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-3 text-xs text-slate-300 flex items-start gap-2.5">
+      <span class="text-base text-sky-400">💡</span>
+      <p>
+        <strong>Come funziona il legame visivo:</strong> Il punto ruota sulla circonferenza di raggio 1. 
+        Il cateto verticale in <strong class="text-emerald-400">verde</strong> rappresenta la quota <strong>sin(x)</strong>. 
+        La <strong>linea tratteggiata arancione</strong> trasporta esattamente quella quota all'angolo corrispondente sull'asse dei gradi: ecco perché nasce la forma a onda della sinusoide!
+      </p>
+    </div>
+
+  </main>
+
+  <script>
+    /* ========================================================
+       STATO DELL'APPLICAZIONE (ESCLUSIVAMENTE IN GRADI)
+       ======================================================== */
+    let currentDegree = 45; // Angolo attuale in gradi [0, 360]
+    let isPlaying = false;
+    let animId = null;
+    let mode = 'explore'; // 'explore' oppure 'challenge'
+
+    const slider = document.getElementById('degreeSlider');
+    const canvas = document.getElementById('synchroCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Gestione Drag & Touch sulla circonferenza
+    let isDraggingCircle = false;
+    let circleGeometry = { cx: 0, cy: 0, r: 0 };
+
+    /* ========================================================
+       RIDIMENSIONAMENTO E ADATTAMENTO CANVAS
+       ======================================================== */
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      draw();
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener('orientationchange', () => setTimeout(resizeCanvas, 150));
+
+    /* ========================================================
+       CONTROLLO ANGOLO
+       ======================================================== */
+    function setDegree(deg) {
+      currentDegree = ((deg % 360) + 360) % 360;
+      if (currentDegree === 0 && deg === 360) currentDegree = 360;
+      slider.value = currentDegree;
+      updateUI();
+      draw();
+    }
+
+    slider.addEventListener('input', (e) => {
+      currentDegree = parseFloat(e.target.value);
+      updateUI();
+      draw();
+    });
+
+    function updateUI() {
+      const rad = (currentDegree * Math.PI) / 180;
+      const sinVal = Math.sin(rad);
+
+      document.getElementById('displayDeg').textContent = `${Math.round(currentDegree)}°`;
+      document.getElementById('sliderValueBadge').textContent = `${Math.round(currentDegree)}°`;
+      document.getElementById('displaySin').textContent = sinVal.toFixed(3);
+
+      // Quadrante
+      let qText = "1° Quadrante (0° - 90°)";
+      if (currentDegree > 90 && currentDegree <= 180) qText = "2° Quadrante (90° - 180°)";
+      else if (currentDegree > 180 && currentDegree <= 270) qText = "3° Quadrante (180° - 270°)";
+      else if (currentDegree > 270 && currentDegree <= 360) qText = "4° Quadrante (270° - 360°)";
+      document.getElementById('displayQuad').textContent = qText;
+    }
+
+    function togglePlay() {
+      isPlaying = !isPlaying;
+      const playIcon = document.getElementById('playIcon');
+      const playLabel = document.getElementById('playLabel');
+      const btn = document.getElementById('btnPlay');
+
+      if (isPlaying) {
+        playIcon.textContent = "⏸";
+        playLabel.textContent = "Pausa";
+        btn.classList.remove('bg-sky-500');
+        btn.classList.add('bg-amber-500');
+        lastTimestamp = performance.now();
+        animId = requestAnimationFrame(animateStep);
+      } else {
+        playIcon.textContent = "▶";
+        playLabel.textContent = "Avvia Animazione";
+        btn.classList.remove('bg-amber-500');
+        btn.classList.add('bg-sky-500');
+        cancelAnimationFrame(animId);
+      }
+    }
+
+    let lastTimestamp = 0;
+    function animateStep(timestamp) {
+      if (!isPlaying) return;
+      const dt = (timestamp - lastTimestamp) / 1000;
+      lastTimestamp = timestamp;
+
+      // Velocità rotazione: 45 gradi al secondo
+      currentDegree = (currentDegree + dt * 45) % 360;
+      slider.value = currentDegree;
+      updateUI();
+      draw();
+
+      animId = requestAnimationFrame(animateStep);
+    }
+
+    /* ========================================================
+       DISEGNO SINCRONIZZATO (CIRCONFERENZA + PIANO CARTESIANO)
+       ======================================================== */
+    function draw() {
+      const w = canvas.getBoundingClientRect().width;
+      const h = canvas.getBoundingClientRect().height;
+      if (!w || !h) return;
+
+      ctx.clearRect(0, 0, w, h);
+
+      // Layout responsive: su schermi verticali o molto stretti proporzione adattata
+      const isNarrow = w < 540;
+      const circleAreaWidth = isNarrow ? Math.max(130, w * 0.35) : Math.min(240, w * 0.36);
+      const graphStartX = circleAreaWidth + 20;
+      const graphEndX = w - 16;
+      const graphWidth = Math.max(50, graphEndX - graphStartX);
+
+      const centerY = h / 2;
+      const radius = Math.min(circleAreaWidth * 0.42, (h / 2) - 24);
+      const circleCenterX = circleAreaWidth / 2 + 10;
+
+      // Salviamo la geometria per consentire l'interazione touch sul cerchio
+      circleGeometry = { cx: circleCenterX, cy: centerY, r: radius };
+
+      const rad = (currentDegree * Math.PI) / 180;
+      const sinVal = Math.sin(rad);
+      const cosVal = Math.cos(rad);
+
+      // Coordinate punto P sulla circonferenza (in canvas Y è invertito)
+      const px = circleCenterX + radius * cosVal;
+      const py = centerY - radius * sinVal;
+
+      // Coordinate punto Q sulla sinusoide
+      const qx = graphStartX + (currentDegree / 360) * graphWidth;
+      const qy = centerY - radius * sinVal;
+
+      // ----------------------------------------------------
+      // 1. CIRCONFERENZA GONIOMETRICA
+      // ----------------------------------------------------
+      // Assi cartesiani cerchio
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = '#334155';
+      ctx.beginPath();
+      ctx.moveTo(circleCenterX - radius - 15, centerY);
+      ctx.lineTo(circleCenterX + radius + 15, centerY);
+      ctx.moveTo(circleCenterX, centerY - radius - 15);
+      ctx.lineTo(circleCenterX, centerY + radius + 15);
+      ctx.stroke();
+
+      // Cerchio goniometrico
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#0284c7';
+      ctx.beginPath();
+      ctx.arc(circleCenterX, centerY, radius, 0, 2 * Math.PI);
+      ctx.stroke();
+
+      // Etichette gradi notevoli cerchio
+      ctx.font = '10px monospace';
+      ctx.fillStyle = '#64748b';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('0°', circleCenterX + radius + 12, centerY);
+      ctx.fillText('90°', circleCenterX, centerY - radius - 10);
+      ctx.fillText('180°', circleCenterX - radius - 14, centerY);
+      ctx.fillText('270°', circleCenterX, centerY + radius + 10);
+
+      // Settore circolare angolo alpha
+      ctx.beginPath();
+      ctx.moveTo(circleCenterX, centerY);
+      ctx.arc(circleCenterX, centerY, Math.min(28, radius * 0.45), 0, -rad, true);
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.25)';
+      ctx.fill();
+
+      // Triangolo rettangolo di riferimento
+      ctx.beginPath();
+      ctx.strokeStyle = '#475569';
+      ctx.setLineDash([2, 3]);
+      ctx.moveTo(px, centerY);
+      ctx.lineTo(px, py); // Cateto opposto (seno)
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Segmento Cateto Seno (Verde evidenziato sull'asse Y e nel triangolo)
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = '#10b981';
+      ctx.beginPath();
+      ctx.moveTo(px, centerY);
+      ctx.lineTo(px, py);
+      ctx.stroke();
+
+      // Raggio unitario mobile
+      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = '#38bdf8';
+      ctx.beginPath();
+      ctx.moveTo(circleCenterX, centerY);
+      ctx.lineTo(px, py);
+      ctx.stroke();
+
+      // Punto mobile P sulla circonferenza
+      ctx.fillStyle = '#f8fafc';
+      ctx.beginPath();
+      ctx.arc(px, py, 5, 0, 2 * Math.PI);
+      ctx.fill();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#38bdf8';
+      ctx.stroke();
+
+      // ----------------------------------------------------
+      // 2. GRAFICO CARTESIANO y = sin(x) (0° -> 360°)
+      // ----------------------------------------------------
+      // Asse X e Asse Y cartesiano
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = '#475569';
+      ctx.beginPath();
+      ctx.moveTo(graphStartX, centerY);
+      ctx.lineTo(graphEndX, centerY);
+      ctx.moveTo(graphStartX, centerY - radius - 10);
+      ctx.lineTo(graphStartX, centerY + radius + 10);
+      ctx.stroke();
+
+      // Tacche asse orizzontale SOLO IN GRADI
+      const ticks = [0, 90, 180, 270, 360];
+      ctx.font = '10px monospace';
+      ctx.fillStyle = '#94a3b8';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'top';
+
+      ticks.forEach(t => {
+        const tx = graphStartX + (t / 360) * graphWidth;
+        ctx.beginPath();
+        ctx.strokeStyle = '#475569';
+        ctx.moveTo(tx, centerY - 4);
+        ctx.lineTo(tx, centerY + 4);
+        ctx.stroke();
+        ctx.fillText(`${t}°`, tx, centerY + 7);
+      });
+
+      // Tacche asse Y (-1, 0, +1)
+      ctx.textAlign = 'right';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('+1', graphStartX - 6, centerY - radius);
+      ctx.fillText('0', graphStartX - 6, centerY);
+      ctx.fillText('-1', graphStartX - 6, centerY + radius);
+
+      // Linea guida superiore e inferiore a +1 e -1
+      ctx.strokeStyle = '#1e293b';
+      ctx.setLineDash([3, 4]);
+      ctx.beginPath();
+      ctx.moveTo(graphStartX, centerY - radius);
+      ctx.lineTo(graphEndX, centerY - radius);
+      ctx.moveTo(graphStartX, centerY + radius);
+      ctx.lineTo(graphEndX, centerY + radius);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Tracciamento completo della sinusoide di riferimento (traccia tenue)
+      ctx.lineWidth = 1.5;
+      ctx.strokeStyle = 'rgba(16, 185, 129, 0.25)';
+      ctx.beginPath();
+      for (let deg = 0; deg <= 360; deg += 2) {
+        const xPos = graphStartX + (deg / 360) * graphWidth;
+        const yPos = centerY - radius * Math.sin((deg * Math.PI) / 180);
+        if (deg === 0) ctx.moveTo(xPos, yPos);
+        else ctx.lineTo(xPos, yPos);
+      }
+      ctx.stroke();
+
+      // Tracciamento della curva percorsa fino all'angolo attuale
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = '#10b981';
+      ctx.beginPath();
+      for (let deg = 0; deg <= currentDegree; deg += 1) {
+        const xPos = graphStartX + (deg / 360) * graphWidth;
+        const yPos = centerY - radius * Math.sin((deg * Math.PI) / 180);
+        if (deg === 0) ctx.moveTo(xPos, yPos);
+        else ctx.lineTo(xPos, yPos);
+      }
+      ctx.stroke();
+
+      // ----------------------------------------------------
+      // 3. COLLEGAMENTO TRATTEGGIATO ISTANTANEO (CIRCOLO -> ONDA)
+      // ----------------------------------------------------
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(px, py);
+      ctx.lineTo(qx, qy);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Punto Q sulla sinusoide
+      ctx.fillStyle = '#f59e0b';
+      ctx.beginPath();
+      ctx.arc(qx, qy, 5, 0, 2 * Math.PI);
+      ctx.fill();
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#ffffff';
+      ctx.stroke();
+    }
+
+    /* ========================================================
+       INTERAZIONE TOUCH & MOUSE DIRETTA SUL CERCHIO
+       ======================================================== */
+    function getPointerAngle(evt) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+      const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+      const x = clientX - rect.left - circleGeometry.cx;
+      const y = clientY - rect.top - circleGeometry.cy;
+
+      // Invertiamo y perché il canvas ha asse verticale verso il basso
+      let rad = Math.atan2(-y, x);
+      if (rad < 0) rad += 2 * Math.PI;
+      return (rad * 180) / Math.PI;
+    }
+
+    function isInsideCircle(evt) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+      const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+      const x = clientX - rect.left - circleGeometry.cx;
+      const y = clientY - rect.top - circleGeometry.cy;
+      const dist = Math.sqrt(x * x + y * y);
+      return dist <= circleGeometry.r + 30; // area di tocco confortevole
+    }
+
+    function onPointerDown(e) {
+      if (isInsideCircle(e)) {
+        isDraggingCircle = true;
+        if (isPlaying) togglePlay(); // se animato, ferma l'animazione al tocco
+        const deg = getPointerAngle(e);
+        setDegree(Math.round(deg));
+      }
+    }
+
+    function onPointerMove(e) {
+      if (!isDraggingCircle) return;
+      e.preventDefault();
+      const deg = getPointerAngle(e);
+      setDegree(Math.round(deg));
+    }
+
+    function onPointerUp() {
+      isDraggingCircle = false;
+    }
+
+    canvas.addEventListener('mousedown', onPointerDown);
+    window.addEventListener('mousemove', onPointerMove);
+    window.addEventListener('mouseup', onPointerUp);
+
+    canvas.addEventListener('touchstart', onPointerDown, { passive: false });
+    window.addEventListener('touchmove', onPointerMove, { passive: false });
+    window.addEventListener('touchend', onPointerUp);
+
+    /* ========================================================
+       MODALITÀ SFIDA TARGET ("BECCA I GRADI")
+       ======================================================== */
+    const challengeTypes = [
+      { type: 'sin', targetSin: 0.500, label: 'Trova un angolo dove sin(x) = 0.50' },
+      { type: 'sin', targetSin: 1.000, label: 'Trova il punto di massimo assoluto (sin(x) = 1.00)' },
+      { type: 'deg', targetDeg: 210, label: 'Posiziona il raggio esattamente a 210°' },
+      { type: 'sin', targetSin: -0.500, label: 'Trova un angolo dove sin(x) = -0.50' },
+      { type: 'deg', targetDeg: 135, label: 'Posiziona il raggio nell’angolo di 135°' },
+      { type: 'sin', targetSin: 0.000, label: 'Trova un punto in cui il seno si azzera (sin(x) = 0)' },
+      { type: 'sin', targetSin: -1.000, label: 'Trova il punto di minimo assoluto (sin(x) = -1.00)' },
+      { type: 'deg', targetDeg: 300, label: 'Posiziona il raggio nel 4° quadrante a 300°' }
+    ];
+
+    let currentQuestion = null;
+    let challengeStep = 1;
+    let score = 0;
+
+    function switchMode(m) {
+      mode = m;
+      const challengeBox = document.getElementById('challengeBox');
+      const tabExploreBtn = document.getElementById('tabExploreBtn');
+      const tabChallengeBtn = document.getElementById('tabChallengeBtn');
+
+      if (mode === 'explore') {
+        challengeBox.classList.add('hidden');
+        tabExploreBtn.className = "px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-sky-600 text-white flex items-center justify-center gap-1.5 shadow";
+        tabChallengeBtn.className = "px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5";
+      } else {
+        challengeBox.classList.remove('hidden');
+        tabChallengeBtn.className = "px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-amber-600 text-white flex items-center justify-center gap-1.5 shadow";
+        tabExploreBtn.className = "px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5";
+        challengeStep = 1;
+        score = 0;
+        document.getElementById('chScore').textContent = score;
+        newChallengeQuestion();
+      }
+    }
+
+    function newChallengeQuestion() {
+      const randIndex = Math.floor(Math.random() * challengeTypes.length);
+      currentQuestion = challengeTypes[randIndex];
+      document.getElementById('chCurrentStep').textContent = challengeStep;
+      document.getElementById('targetPrompt').textContent = currentQuestion.label;
+      const feedback = document.getElementById('challengeFeedback');
+      feedback.textContent = "Muovi il raggio o il cursore e premi Verifica.";
+      feedback.className = "text-xs text-slate-300 font-medium";
+    }
+
+    function verifyChallengeAnswer() {
+      const feedback = document.getElementById('challengeFeedback');
+      const currentSin = Math.sin((currentDegree * Math.PI) / 180);
+
+      let success = false;
+      let msg = "";
+
+      if (currentQuestion.type === 'deg') {
+        const diff = Math.abs(currentDegree - currentQuestion.targetDeg);
+        if (diff <= 3) {
+          success = true;
+          msg = `Perfetto! Sei a ${Math.round(currentDegree)}° (Target: ${currentQuestion.targetDeg}°).`;
+        } else {
+          msg = `Quasi! Sei a ${Math.round(currentDegree)}°, l'obiettivo era ${currentQuestion.targetDeg}°.`;
+        }
+      } else {
+        const sinDiff = Math.abs(currentSin - currentQuestion.targetSin);
+        if (sinDiff <= 0.05) {
+          success = true;
+          msg = `Ottimo lavoro! Il seno è ${currentSin.toFixed(3)} (Target: ${currentQuestion.targetSin.toFixed(2)}).`;
+        } else {
+          msg = `Riprova: attualmente sin(${Math.round(currentDegree)}°) = ${currentSin.toFixed(3)}.`;
+        }
+      }
+
+      if (success) {
+        score += 20;
+        document.getElementById('chScore').textContent = score;
+        feedback.textContent = "✓ " + msg;
+        feedback.className = "text-xs text-emerald-400 font-bold";
+
+        setTimeout(() => {
+          challengeStep++;
+          if (challengeStep > 5) {
+            feedback.textContent = `🎉 Sfida completata! Punteggio finale: ${score} su 100!`;
+            challengeStep = 1;
+          } else {
+            newChallengeQuestion();
+          }
+        }, 1200);
+      } else {
+        feedback.textContent = "✗ " + msg;
+        feedback.className = "text-xs text-rose-400 font-semibold";
+      }
+    }
+
+    // Inizializzazione al caricamento finestra
+    window.onload = function() {
+      resizeCanvas();
+      updateUI();
+    };
+  </script>
+</body>
+</html>
