@@ -2,66 +2,138 @@
 <html lang="it">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="refresh" content="0; url=laboratorio_sinusoide.html">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Canvas Didattici - Laboratorio Sinusoide</title>
-  <script>
-    window.location.replace("laboratorio_sinusoide.html");
-  </script>
+  <title>Canvas Didattici - Laboratori Interattivi</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background-color: #020617;
-      color: #f8fafc;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-      text-align: center;
-      padding: 1.5rem;
+    .card-hover {
+      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
     }
-    .card {
-      background: #0f172a;
-      border: 1px solid #1e293b;
-      border-radius: 1rem;
-      padding: 2rem;
-      max-width: 480px;
-      width: 100%;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
-    }
-    h1 {
-      margin-top: 0;
-      font-size: 1.5rem;
-      color: #38bdf8;
-    }
-    p {
-      color: #94a3b8;
-      font-size: 0.95rem;
-      line-height: 1.5;
-    }
-    a.btn {
-      display: inline-block;
-      margin-top: 1rem;
-      padding: 0.75rem 1.5rem;
-      background-color: #0284c7;
-      color: #ffffff;
-      text-decoration: none;
-      font-weight: 600;
-      border-radius: 0.5rem;
-      transition: background-color 0.2s;
-    }
-    a.btn:hover {
-      background-color: #0369a1;
+    .card-hover:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 28px -6px rgba(14, 165, 233, 0.18);
     }
   </style>
 </head>
-<body>
-  <div class="card">
-    <h1>Canvas Didattici</h1>
-    <p>Reindirizzamento automatico al <strong>Laboratorio Sinusoide (y = sin(x))</strong> in corso...</p>
-    <a class="btn" href="laboratorio_sinusoide.html">Apri Laboratorio &rarr;</a>
-  </div>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-sky-500 selection:text-white">
+
+  <!-- Header -->
+  <header class="bg-slate-900/90 backdrop-blur border-b border-slate-800 sticky top-0 z-40 px-4 py-3.5">
+    <div class="max-w-5xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-600 to-emerald-400 p-[1px] shadow-lg shadow-sky-500/20">
+          <div class="w-full h-full bg-slate-950 rounded-[11px] flex items-center justify-center font-black text-sky-400 text-lg">
+            ∼
+          </div>
+        </div>
+        <div>
+          <h1 class="text-lg sm:text-xl font-bold tracking-tight text-white flex items-center gap-2">
+            Canvas Didattici
+          </h1>
+          <p class="text-xs text-slate-400 hidden sm:block">Laboratori ed esperimenti interattivi per l'apprendimento visivo</p>
+        </div>
+      </div>
+
+      <a href="https://github.com/biodanzalberto-bot/Canvas-didattici" 
+         target="_blank" 
+         rel="noopener noreferrer"
+         class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 transition">
+        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.53 1.032 1.53 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+        </svg>
+        <span>GitHub</span>
+      </a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <main class="flex-1 max-w-5xl w-full mx-auto p-4 sm:p-6 flex flex-col gap-6">
+    
+    <div class="bg-gradient-to-br from-slate-900 via-slate-900 to-sky-950/40 border border-slate-800 rounded-2xl p-5 sm:p-7 shadow-xl">
+      <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full text-xs font-semibold bg-sky-500/10 text-sky-400 border border-sky-500/20 mb-3">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        Catalogo Attività Didattiche
+      </div>
+      <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+        Esplora i Laboratori Interattivi
+      </h2>
+      <p class="text-sm sm:text-base text-slate-400 max-w-2xl mt-2 leading-relaxed">
+        Seleziona un'attività per avviare il canvas interattivo. Ogni modulo permette di esplorare concetti scientifici e matematici attraverso grafici dinamici, animazioni e simulazioni in tempo reale.
+      </p>
+    </div>
+
+    <!-- Sezione Elenco Pagine / Laboratori -->
+    <div class="flex items-center justify-between pt-2">
+      <h3 class="text-base sm:text-lg font-bold text-slate-200 flex items-center gap-2">
+        <span>📚</span> Laboratori Disponibili
+      </h3>
+      <span class="text-xs bg-slate-800 text-slate-400 px-2.5 py-1 rounded-md font-mono border border-slate-700">
+        1 modulo attivo
+      </span>
+    </div>
+
+    <!-- Griglia dei Laboratori -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+      <!-- Scheda 1: Sinusoide -->
+      <a href="laboratorio_sinusoide.html" 
+         class="card-hover group bg-slate-900/90 border border-slate-800 hover:border-sky-500/50 rounded-2xl p-5 flex flex-col justify-between block relative overflow-hidden">
+        
+        <div class="flex flex-col gap-3">
+          <div class="flex items-start justify-between gap-3">
+            <span class="px-2.5 py-1 rounded-lg text-xs font-bold uppercase tracking-wider bg-sky-500/10 text-sky-400 border border-sky-500/20">
+              Trigonometria & Funzioni
+            </span>
+            <span class="text-xl group-hover:scale-110 transition-transform">📈</span>
+          </div>
+
+          <div>
+            <h4 class="text-lg font-bold text-white group-hover:text-sky-300 transition-colors flex items-center gap-2">
+              La Sinusoide in Gradi
+              <span class="text-emerald-400 font-mono text-sm font-semibold">y = sin(x)</span>
+            </h4>
+            <p class="text-xs sm:text-sm text-slate-400 mt-2 leading-relaxed">
+              Visualizzazione dinamica e sincronizzata tra circonferenza goniometrica e tracciamento dell'onda sinusoidale da 0° a 360°. Include slider, animazione continua e la modalità sfida "Becca i Gradi" con punteggio.
+            </p>
+          </div>
+
+          <div class="flex flex-wrap gap-1.5 pt-1">
+            <span class="text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700/60">Circonferenza unitaria</span>
+            <span class="text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700/60">4 Quadranti</span>
+            <span class="text-[11px] px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700/60">Modalità Sfida</span>
+          </div>
+        </div>
+
+        <div class="mt-5 pt-4 border-t border-slate-800/80 flex items-center justify-between">
+          <span class="text-xs text-slate-500 font-mono">laboratorio_sinusoide.html</span>
+          <span class="inline-flex items-center gap-1.5 text-xs font-bold text-sky-400 group-hover:translate-x-1 transition-transform">
+            Apri Laboratorio <span>&rarr;</span>
+          </span>
+        </div>
+      </a>
+
+      <!-- Scheda Placeholder per i prossimi laboratori -->
+      <div class="border border-dashed border-slate-800 bg-slate-900/30 rounded-2xl p-5 flex flex-col items-center justify-center text-center gap-2 min-h-[220px]">
+        <div class="w-10 h-10 rounded-full bg-slate-800/80 flex items-center justify-center text-slate-500 text-lg">
+          +
+        </div>
+        <h4 class="text-sm font-bold text-slate-400">Altri laboratori in arrivo</h4>
+        <p class="text-xs text-slate-500 max-w-xs">
+          Per aggiungere una nuova attività, basta salvare il file HTML nel repository e aggiungerlo a questo catalogo.
+        </p>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-800/80 bg-slate-900/40 py-4 px-4 mt-8">
+    <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
+      <span>Canvas Didattici &bull; Realizzato con Gemini Canvas & GitHub Pages</span>
+      <a href="laboratorio_sinusoide.html" class="text-sky-400 hover:underline">Vai al Laboratorio Sinusoide &rarr;</a>
+    </div>
+  </footer>
+
 </body>
 </html>
