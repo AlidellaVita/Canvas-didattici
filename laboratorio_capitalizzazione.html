@@ -293,23 +293,38 @@
       <!-- Spiegazione Didattica e Box Teoria -->
       <div class="bg-white border border-[#EAE3D9] rounded-2xl p-4 sm:p-5 flex flex-col gap-2.5 text-xs sm:text-sm text-slate-700 leading-relaxed card-shadow">
         <h3 class="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
-          <span>💡</span> Perché il capitale non esplode all'infinito? (La forma indeterminata 1^∞)
+          <span>💡</span> Perché il capitale non esplode all'infinito? (La forma indeterminata [1<sup>&infin;</sup>])
         </h3>
         <p>
-          Quando aumentiamo la frequenza dei reinvestimenti da 1 anno fino a ogni secondo o a ogni infinitesimo di tempo ($n \to +\infty$), si creano due forze matematiche opposte:
+          Quando aumentiamo la frequenza dei reinvestimenti da 1 anno fino a ogni secondo o a ogni infinitesimo di tempo (<strong>n &rarr; +&infin;</strong>), si creano due forze matematiche opposte:
         </p>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-3 my-1">
-          <div class="bg-sky-50/70 p-3 rounded-xl border border-sky-100">
-            <strong class="text-sky-800 block mb-1">1. L'Esponente n tende a +∞</strong>
-            Gli interessi vengono aggiunti e composti un numero stratosferico di volte (31,5 milioni di volte in un anno se capitalizziamo al secondo).
+          <div class="bg-sky-50/70 p-3.5 rounded-xl border border-sky-100">
+            <strong class="text-sky-800 block mb-1">1. L'Esponente <em>n</em> tende a +&infin;</strong>
+            Gli interessi vengono accreditati e composti un numero stratosferico di volte (31,5 milioni di volte in un anno se capitalizziamo al secondo).
           </div>
-          <div class="bg-emerald-50/70 p-3 rounded-xl border border-emerald-100">
+          <div class="bg-emerald-50/70 p-3.5 rounded-xl border border-emerald-100">
             <strong class="text-emerald-800 block mb-1">2. La Base (1 + r/n) tende a 1</strong>
             La quota di interesse riconosciuta per ciascun minuscolo intervallo diventa infinitesima (un trentamilionesimo di interesse!).
           </div>
         </div>
         <p>
-          Nessuna delle due forze vince: si bilanciano esattamente nel celebre limite notevole $\lim_{n \to \infty} (1 + 1/n)^n = e \approx 2{,}718281828...$. È proprio così che nasce il numero di Nepero!
+          Nessuna delle due forze prevale sull'altra: si bilanciano esattamente nel celebre <strong>limite notevole</strong>:
+        </p>
+        
+        <!-- Box Formula Limite Notevole Formattata -->
+        <div class="my-2 p-3 sm:p-4 bg-amber-50/90 rounded-2xl border border-amber-300 text-center shadow-xs">
+          <div class="text-xs uppercase tracking-wider text-amber-800/80 font-semibold mb-1">Il Limite Fondamentale di Eulero e Bernoulli</div>
+          <div class="text-base sm:text-xl font-mono font-bold text-amber-950 tracking-wide">
+            lim<sub>n &rarr; +&infin;</sub> &lpar;1 + <sup>1</sup>&frasl;<sub>n</sub>&rpar;<sup>n</sup> = e &approx; 2,718281828...
+          </div>
+          <div class="text-[11px] text-amber-800 mt-1 font-medium">
+            Nel caso generale con tasso nominale <em>r</em>: &nbsp; lim<sub>n &rarr; +&infin;</sub> C<sub>0</sub> &middot; &lpar;1 + <sup>r</sup>&frasl;<sub>n</sub>&rpar;<sup>n&middot;t</sup> = C<sub>0</sub> &middot; e<sup>r&middot;t</sup>
+          </div>
+        </div>
+
+        <p class="text-slate-600">
+          È proprio così che nasce il <strong>numero di Nepero <em>e</em></strong>: l'equilibrio matematico perfetto tra la frequenza infinita degli accrediti e la misura infinitesima di ciascun interesse.
         </p>
       </div>
 
@@ -859,7 +874,7 @@
         options: [
           { text: "[ 0 / 0 ]", correct: false },
           { text: "[ +∞ - ∞ ]", correct: false },
-          { text: "[ 1^∞ ]", correct: true },
+          { text: "[ 1<sup>&infin;</sup> ]", correct: true },
           { text: "[ 0 · ∞ ]", correct: false }
         ],
         explanation: "Giusto! La base (1 + r/n) tende a 1, mentre l'esponente n tende a +∞. Questa forma indeterminata genera proprio il limite notevole del numero di Nepero e."
