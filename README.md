@@ -6,7 +6,8 @@ Raccolta di canvas interattivi ed esperimenti didattici per l'apprendimento visi
 
 Puoi provare il laboratorio direttamente online al seguente link:
 
-👉 **[https://biodanzalberto-bot.github.io/Canvas-didattici/](https://biodanzalberto-bot.github.io/Canvas-didattici/)**
+👉 **[https://alidellavita.github.io/Canvas-didattici/](https://alidellavita.github.io/Canvas-didattici/)**
+*(oppure tramite il precedente redirect: [https://biodanzalberto-bot.github.io/Canvas-didattici/](https://biodanzalberto-bot.github.io/Canvas-didattici/))*
 
 ---
 
