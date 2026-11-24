@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Capitalizzazione Composta e Continua - Il Limite del Numero e</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * {
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    input[type=range] {
+      -webkit-appearance: none;
+      width: 100%;
+      background: transparent;
+    }
+    input[type=range]:focus {
+      outline: none;
+    }
+    input[type=range]::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 8px;
+      cursor: pointer;
+      background: #334155;
+      border-radius: 9999px;
+    }
+    input[type=range]::-webkit-slider-thumb {
+      height: 24px;
+      width: 24px;
+      border-radius: 50%;
+      background: #38bdf8;
+      cursor: pointer;
+      -webkit-appearance: none;
+      margin-top: -8px;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
+      border: 2px solid #ffffff;
+    }
+    canvas {
+      touch-action: none;
+    }
+    .step-btn.active {
+      background: #0284c7;
+      color: #ffffff;
+      border-color: #38bdf8;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.35);
+    }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-sky-500 selection:text-white">
+
+  <!-- Header -->
+  <header class="bg-slate-900/90 backdrop-blur border-b border-slate-800 sticky top-0 z-40 px-3 py-2.5 sm:px-4 sm:py-3">
+    <div class="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2.5">
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="px-2.5 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 text-xs font-semibold flex items-center gap-1 transition">
+          <span>←</span> <span class="hidden sm:inline">Catalogo</span>
+        </a>
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-lg bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-400 font-serif font-black text-lg">
+            e
+          </div>
+          <div>
+            <h1 class="text-base sm:text-lg font-bold tracking-tight text-white flex items-center gap-2">
+              Dalla Composta alla Continua: <span class="text-amber-400 font-mono text-sm sm:text-base">M = C₀ · eʳᵗ</span>
+            </h1>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tasti Modalità -->
+      <div class="grid grid-cols-2 gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 w-full sm:w-auto">
+        <button id="tabExploreBtn" onclick="switchMode('explore')" class="px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-sky-600 text-white flex items-center justify-center gap-1.5 shadow">
+          <span>🔍</span> Esplorazione & Grafici
+        </button>
+        <button id="tabChallengeBtn" onclick="switchMode('challenge')" class="px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5">
+          <span>🎯</span> Quiz per la Classe
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-6xl w-full mx-auto p-2.5 sm:p-4 flex flex-col gap-3">
+
+    <!-- Card Valori Chiave in Primo Piano -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5">
+        <span class="text-[11px] uppercase tracking-wider text-slate-400 block font-semibold">Frequenza Periodo</span>
+        <span id="displayFreq" class="text-lg sm:text-xl font-black text-sky-400 font-mono">Semestrale</span>
+        <span id="displayN" class="text-[11px] text-slate-500 block">n = 2 volte/anno</span>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5">
+        <span class="text-[11px] uppercase tracking-wider text-slate-400 block font-semibold">Capitale Finale (1 anno)</span>
+        <span id="displayM" class="text-lg sm:text-xl font-black text-emerald-400 font-mono">2.250,00 €</span>
+        <span id="displayMPrecise" class="text-[11px] text-emerald-500/80 block font-mono">2250.0000 €</span>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5">
+        <span class="text-[11px] uppercase tracking-wider text-slate-400 block font-semibold">Guadagno vs Annuale</span>
+        <span id="displayExtra" class="text-lg sm:text-xl font-bold text-sky-300 font-mono">+ 250,00 €</span>
+        <span id="displayMarginal" class="text-[11px] text-amber-400 block">Marginale: +250,00 €</span>
+      </div>
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-2.5">
+        <span class="text-[11px] uppercase tracking-wider text-slate-400 block font-semibold">Limite Continuo (e)</span>
+        <span id="displayLimit" class="text-lg sm:text-xl font-black text-amber-400 font-mono">2.718,28 €</span>
+        <span id="displayDist" class="text-[11px] text-slate-400 block">Mancano: <strong id="distVal" class="text-amber-300">468,28 €</strong></span>
+      </div>
+    </div>
+
+    <!-- Selettore Scenari Didattici Rapidi -->
+    <div class="bg-slate-900/90 border border-slate-800 rounded-xl p-2.5 sm:p-3 flex flex-col md:flex-row items-center justify-between gap-2.5">
+      <div class="flex items-center gap-2">
+        <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Scenario Didattico:</span>
+      </div>
+      <div class="flex flex-wrap gap-1.5 justify-center">
+        <button onclick="setScenario(1000, 1.0, 'bernoulli')" id="btnBernoulli" class="scenario-btn px-3 py-1 rounded-lg text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 transition">
+          👑 Esperimento di Bernoulli (C₀ = 1.000 €, r = 100%)
+        </button>
+        <button onclick="setScenario(10000, 0.10, 'real10')" id="btnReal10" class="scenario-btn px-3 py-1 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 transition">
+          💼 Finanziario Alto (C₀ = 10.000 €, r = 10%)
+        </button>
+        <button onclick="setScenario(1000, 0.05, 'real5')" id="btnReal5" class="scenario-btn px-3 py-1 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 transition">
+          🏦 Standard (C₀ = 1.000 €, r = 5%)
+        </button>
+      </div>
+    </div>
+
+    <!-- Pannello Esplorazione Libera -->
+    <div id="explorePanel" class="flex flex-col gap-3">
+      
+      <!-- Pulsantiera Frequenze a Scatto -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-3 flex flex-col gap-2">
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 text-xs">
+          <span class="font-bold text-slate-300 flex items-center gap-1.5">
+            <span>⏱️</span> Scegli ogni quanto ritirare/capitalizzare gli interessi:
+          </span>
+          <span class="text-slate-400">Clicca un pulsante o usa il tasto Play per animare la convergenza</span>
+        </div>
+
+        <!-- Griglia Pulsanti Frequenza -->
+        <div class="grid grid-cols-3 sm:grid-cols-6 lg:grid-cols-11 gap-1.5 pt-1">
+          <button onclick="selectStepIndex(0)" class="step-btn px-2 py-2 rounded-lg text-xs font-semibold bg-slate-800/80 border border-slate-700 text-slate-300 hover:border-sky-500 transition text-center" data-idx="0">
+            <span class="block font-bold">1 Anno</span>
+            <span class="text-[10px] text-slate-400 block">n = 1</span>
+          </button>
+          <button onclick="selectStepIndex(1)" class="step-btn px-2 py-2 rounded-lg text-xs font-semibold bg-slate-800/80 border border-slate-700 text-slate-300 hover:border-sky-500 transition text-center active" data-idx="1">
+            <span class="block font-bold">6 Mesi</span>
+            <span class="text-[10px] text-slate-400 block">n = 2</span>
+          </button>
+          <button onclick="selectStepIndex(2)" class="step-btn px-2 py-2 rounded-lg text-xs font-semibold bg-slate-800/80 border border-slate-700 text-slate-300 hover:border-sky-500 transition text-center" data-idx="2">
+            <span class="block font-bold">4 Mesi</span>
+            <span class="text-[10px] text-slate-400 block">n = 3</span>
+          </button>
+          <button onclick="selectStepIndex(3)" class="step-btn px-2 py-2 rounded-lg text-xs font-semibold bg-slate-800/80 border border-slate-700 text-slate-300 hover:border-sky-500 transition text-center" data-idx="3">
+            <span class="block font-bold">3 Mesi</span>
+            <span class="text-[10px] text-slate-400 block">n = 4</span>
+          </button>
+          <button onclick="selectStepIndex(4)" class="step-btn px-2 py-2 rounded-lg text-xs font-semibold bg-slate-800/80 border border-slate-700 text-slate-300 hover:border-sky-500 transition text-center" data-idx="4">
+            <span class="block font-bold">1 Mese</span>
+            <span class="text-[10px] text-slate-400 block">n = 12</span>
+          </button>
+          <button onclick="selectStepIndex(5)" class="step-btn px-2 py-2 rounded-lg text-xs font-semibold bg-slate-800/80 border border-slate-700 text-slate-300 hover:border-sky-500 transition text-center" data-idx="5">
+            <span class="block font-bold">7 Giorni</span>
+            <span class="text-[10px] text-slate-400 block">n = 52</span>
+          </button>
+          <button onclick="selectStepIndex(6)" class="step-btn px-2 py-2 rounded-lg text-xs font-semibold bg-slate-800/80 border border-slate-700 text-slate-300 hover:border-sky-500 transition text-center" data-idx="6">
+            <span class="block font-bold">1 Giorno</span>
+            <span class="text-[10px] text-slate-400 block">n = 365</span>
+          </button>
+          <button onclick="selectStepIndex(7)" class="step-btn px-2 py-2 rounded-lg text-xs font-semibold bg-slate-800/80 border border-slate-700 text-slate-300 hover:border-sky-500 transition text-center" data-idx="7">
+            <span class="block font-bold">1 Ora</span>
+            <span class="text-[10px] text-slate-400 block">n = 8.760</span>
+          </button>
+          <button onclick="selectStepIndex(8)" class="step-btn px-2 py-2 rounded-lg text-xs font-semibold bg-slate-800/80 border border-slate-700 text-slate-300 hover:border-sky-500 transition text-center" data-idx="8">
+            <span class="block font-bold">1 Minuto</span>
+            <span class="text-[10px] text-slate-400 block">n = 525.6k</span>
+          </button>
+          <button onclick="selectStepIndex(9)" class="step-btn px-2 py-2 rounded-lg text-xs font-semibold bg-slate-800/80 border border-slate-700 text-slate-300 hover:border-sky-500 transition text-center" data-idx="9">
+            <span class="block font-bold">1 Secondo</span>
+            <span class="text-[10px] text-slate-400 block">n = 31.5M</span>
+          </button>
+          <button onclick="selectStepIndex(10)" class="step-btn px-2 py-2 rounded-lg text-xs font-bold bg-amber-500/20 border border-amber-500/50 text-amber-300 hover:bg-amber-500/30 transition text-center" data-idx="10">
+            <span class="block font-black">Continuo</span>
+            <span class="text-[10px] text-amber-400/80 block">dt → 0</span>
+          </button>
+        </div>
+
+        <!-- Slider e Controlli Riproduzione -->
+        <div class="flex items-center gap-3 pt-2">
+          <button id="btnPlay" onclick="togglePlay()" class="px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 active:scale-95 text-slate-950 font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition whitespace-nowrap shadow">
+            <span id="playIcon">▶</span>
+            <span id="playLabel">Avvia Animazione</span>
+          </button>
+          <div class="flex-1 flex flex-col gap-1">
+            <div class="flex justify-between text-[11px] text-slate-400">
+              <span>Annuale (n=1)</span>
+              <span id="sliderValueLabel" class="text-sky-300 font-mono font-bold">Semestrale (n=2)</span>
+              <span>Continuo (n → ∞)</span>
+            </div>
+            <input type="range" id="stepSlider" min="0" max="10" step="1" value="1" oninput="onSliderChange(this.value)">
+          </div>
+        </div>
+      </div>
+
+      <!-- Sezione dei Due Grafici Canvas -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-3">
+        
+        <!-- Canvas 1: Evoluzione Temporale a Gradini vs Curva Continua -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3 flex flex-col gap-2 shadow-lg">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-bold text-white flex items-center gap-1.5">
+                <span>📈</span> Evoluzione nel Tempo: Gradini vs Continua
+              </span>
+            </div>
+            <span class="text-[11px] font-mono bg-slate-800 text-sky-400 px-2 py-0.5 rounded border border-slate-700">
+              M(t) = C₀(1 + r/n)ⁿᵗ
+            </span>
+          </div>
+
+          <p class="text-xs text-slate-400">
+            I gradini blu rappresentano i salti di capitale a ogni accredito di interessi. La linea verde tratteggiata è la curva limite continua <strong class="text-emerald-400 font-mono">C₀·eʳᵗ</strong>.
+          </p>
+
+          <div class="relative w-full h-[260px] sm:h-[300px] bg-slate-950 rounded-xl border border-slate-800 overflow-hidden">
+            <canvas id="canvasTime" class="w-full h-full block"></canvas>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-400 pt-1 border-t border-slate-800/80">
+            <div class="flex items-center gap-3">
+              <span class="flex items-center gap-1.5"><span class="w-3 h-1 bg-sky-400 rounded"></span> Discreto (n periodi)</span>
+              <span class="flex items-center gap-1.5"><span class="w-3 h-1 bg-emerald-400 rounded"></span> Limite Continuo (eʳᵗ)</span>
+            </div>
+            <span class="text-slate-500">Asse X: 0 - 1 Anno | Asse Y: Capitale (€)</span>
+          </div>
+        </div>
+
+        <!-- Canvas 2: Curva di Convergenza e Utilità Marginale Decrescente -->
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3 flex flex-col gap-2 shadow-lg">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-bold text-white flex items-center gap-1.5">
+                <span>🎯</span> Convergenza all'Asintoto & Utilità Marginale
+              </span>
+            </div>
+            <span class="text-[11px] font-mono bg-amber-500/10 text-amber-300 px-2 py-0.5 rounded border border-amber-500/30">
+              Asintoto: C₀ · eʳ
+            </span>
+          </div>
+
+          <p class="text-xs text-slate-400">
+            In alto la convergenza del capitale all'asintoto. In basso l'istogramma del <strong class="text-amber-400">guadagno marginale</strong>: all'inizio è alto, poi crolla vertiginosamente a zero!
+          </p>
+
+          <div class="relative w-full h-[260px] sm:h-[300px] bg-slate-950 rounded-xl border border-slate-800 overflow-hidden">
+            <canvas id="canvasConvergence" class="w-full h-full block"></canvas>
+          </div>
+
+          <div class="flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-400 pt-1 border-t border-slate-800/80">
+            <div class="flex items-center gap-3">
+              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-full bg-sky-400"></span> Livelli di n</span>
+              <span class="flex items-center gap-1.5"><span class="w-3 h-0.5 bg-amber-400 border border-dashed border-amber-400"></span> Asintoto (e)</span>
+              <span class="flex items-center gap-1.5"><span class="w-2.5 h-2.5 bg-amber-500/50 rounded"></span> Guadagno Marginale</span>
+            </div>
+            <span class="text-slate-500">Converge a C₀ · eʳ</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Spiegazione Didattica e Box Teoria -->
+      <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex flex-col gap-2 text-xs sm:text-sm text-slate-300 leading-relaxed">
+        <h3 class="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+          <span>💡</span> Perché il capitale non esplode all'infinito? (La forma indeterminata 1^∞)
+        </h3>
+        <p>
+          Quando aumentiamo la frequenza dei reinvestimenti da $1$ anno fino a ogni secondo o a ogni infinitesimo di tempo ($n \to +\infty$), si creano due forze opposte:
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 my-1">
+          <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800">
+            <strong class="text-sky-400 block mb-0.5">1. L'Esponente n tende a +∞</strong>
+            Gli interessi vengono aggiunti e composti un numero stratosferico di volte (31,5 milioni di volte in un anno se capitalizziamo al secondo).
+          </div>
+          <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800">
+            <strong class="text-emerald-400 block mb-0.5">2. La Base (1 + r/n) tende a 1</strong>
+            La fetta di interesse riconosciuta per ciascun minuscolo intervallo diventa infinitesima (un trentamilionesimo di interesse!).
+          </div>
+        </div>
+        <p>
+          Nessuna delle due forze vince: si bilanciano esattamente nel limite notevole $\lim_{n \to \infty} (1 + 1/n)^n = e \approx 2{,}718281828...$. È la nascita del numero di Nepero!
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Pannello Quiz / Sfida per la Classe -->
+    <div id="challengePanel" class="hidden flex flex-col gap-3">
+      <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 sm:p-5 flex flex-col gap-4 shadow-xl">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="bg-amber-500 text-slate-950 font-black text-xs px-2.5 py-1 rounded-md uppercase tracking-wide">
+              Domanda <span id="quizStep">1</span>/5
+            </span>
+            <span class="text-xs text-slate-300">Punti: <strong id="quizScore" class="text-amber-400 font-bold text-sm">0</strong></span>
+          </div>
+          <button onclick="nextQuizQuestion()" class="text-xs text-sky-400 underline hover:text-sky-200">
+            Prossima Domanda →
+          </button>
+        </div>
+
+        <div class="bg-slate-950 p-4 rounded-xl border border-slate-800 text-left">
+          <span id="quizCategory" class="text-[11px] font-bold uppercase tracking-wider text-amber-400 block mb-1">Domanda di Ragionamento</span>
+          <h3 id="quizQuestion" class="text-base sm:text-lg font-bold text-white">
+            Se depositi 1.000 € al 100% di interesse annuo e la banca capitalizza gli interessi ogni microsecondo anziché una volta l'anno, diventerai milionario?
+          </h3>
+        </div>
+
+        <div id="quizOptions" class="grid grid-cols-1 gap-2">
+          <!-- Le opzioni vengono popolate via JS -->
+        </div>
+
+        <div id="quizExplanation" class="hidden p-3 rounded-xl text-xs sm:text-sm font-medium leading-relaxed">
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="bg-slate-900 border-t border-slate-800 py-3 px-4 text-center text-xs text-slate-500 mt-auto">
+    Canvas Didattici &bull; ITSOS Albe Steiner &bull; Prof. Alberto Bonazzi
+  </footer>
+
+  <script>
+    // Configurazione dei periodi notevoli
+    const PERIODS = [
+      { name: "Annuale", label: "1 anno", n: 1, freqText: "Annuale (1 anno)" },
+      { name: "Semestrale", label: "6 mesi", n: 2, freqText: "Semestrale (6 mesi)" },
+      { name: "Quadrimestrale", label: "4 mesi", n: 3, freqText: "Quadrimestrale (4 mesi)" },
+      { name: "Trimestrale", label: "3 mesi", n: 4, freqText: "Trimestrale (3 mesi)" },
+      { name: "Mensile", label: "1 mese", n: 12, freqText: "Mensile (1 mese)" },
+      { name: "Settimanale", label: "7 giorni", n: 52, freqText: "Settimanale (7 giorni)" },
+      { name: "Giornaliero", label: "1 giorno", n: 365, freqText: "Giornaliero (1 giorno)" },
+      { name: "Orario", label: "1 ora", n: 8760, freqText: "Orario (1 ora)" },
+      { name: "Al minuto", label: "1 min", n: 525600, freqText: "Al minuto (1 minuto)" },
+      { name: "Al secondo", label: "1 sec", n: 31536000, freqText: "Al secondo (1 secondo)" },
+      { name: "Continuo", label: "dt → 0", n: Infinity, freqText: "Continuo (infinitesimo)" }
+    ];
+
+    // Stato dell'applicazione
+    let state = {
+      C0: 1000,
+      r: 1.0,
+      currentIndex: 1, // default Semestrale
+      isPlaying: false,
+      playTimer: null,
+      activeMode: 'explore' // 'explore' o 'challenge'
+    };
+
+    // Formattatore di valuta
+    function formatCurrency(val, decimals = 2) {
+      return val.toLocaleString('it-IT', { minimumFractionDigits: decimals, maximumFractionDigits: decimals }) + ' €';
+    }
+
+    // Calcolo montante
+    function calcMontante(C0, r, n, t = 1) {
+      if (n === Infinity) {
+        return C0 * Math.exp(r * t);
+      }
+      return C0 * Math.pow(1 + r / n, n * t);
+    }
+
+    // Selettore Scenario
+    function setScenario(C0, r, type) {
+      state.C0 = C0;
+      state.r = r;
+
+      // Aggiorna stile tasti scenario
+      document.querySelectorAll('.scenario-btn').forEach(btn => {
+        btn.className = "scenario-btn px-3 py-1 rounded-lg text-xs font-semibold bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 transition";
+      });
+      if (type === 'bernoulli') {
+        document.getElementById('btnBernoulli').className = "scenario-btn px-3 py-1 rounded-lg text-xs font-semibold bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 transition";
+      } else if (type === 'real10') {
+        document.getElementById('btnReal10').className = "scenario-btn px-3 py-1 rounded-lg text-xs font-semibold bg-sky-500/20 text-sky-300 border border-sky-500/40 hover:bg-sky-500/30 transition";
+      } else if (type === 'real5') {
+        document.getElementById('btnReal5').className = "scenario-btn px-3 py-1 rounded-lg text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 transition";
+      }
+
+      updateUI();
+    }
+
+    // Selezione step
+    function selectStepIndex(idx) {
+      state.currentIndex = Math.max(0, Math.min(PERIODS.length - 1, idx));
+      document.getElementById('stepSlider').value = state.currentIndex;
+      updateUI();
+    }
+
+    function onSliderChange(val) {
+      state.currentIndex = parseInt(val, 10);
+      updateUI();
+    }
+
+    // Aggiornamento interfaccia e grafici
+    function updateUI() {
+      const p = PERIODS[state.currentIndex];
+      const C0 = state.C0;
+      const r = state.r;
+
+      // Calcoli
+      const M_ann = calcMontante(C0, r, 1);
+      const M_current = calcMontante(C0, r, p.n);
+      const M_limit = C0 * Math.exp(r);
+      const extraTotal = M_current - M_ann;
+      const distFromLimit = M_limit - M_current;
+
+      // Calcolo guadagno marginale rispetto allo step precedente
+      let marginal = 0;
+      if (state.currentIndex > 0) {
+        const prevM = calcMontante(C0, r, PERIODS[state.currentIndex - 1].n);
+        marginal = M_current - prevM;
+      }
+
+      // Aggiorna badge e testi
+      document.getElementById('displayFreq').textContent = p.name;
+      document.getElementById('displayN').textContent = p.n === Infinity ? 'n → +∞ (continuo)' : `n = ${p.n.toLocaleString('it-IT')} volte/anno`;
+
+      // Se n è molto alto, mostra più decimali per apprezzare le differenze
+      const dec = (state.currentIndex >= 8) ? 4 : 2;
+      document.getElementById('displayM').textContent = formatCurrency(M_current, 2);
+      document.getElementById('displayMPrecise').textContent = formatCurrency(M_current, 4);
+
+      document.getElementById('displayExtra').textContent = '+' + formatCurrency(extraTotal, dec);
+      document.getElementById('displayMarginal').innerHTML = `Marginale: <strong>+${formatCurrency(marginal, (marginal < 0.01 && marginal > 0) ? 4 : 2)}</strong>`;
+
+      document.getElementById('displayLimit').textContent = formatCurrency(M_limit, 2);
+      document.getElementById('distVal').textContent = distFromLimit < 0.0001 ? "0,00 € (sul limite!)" : formatCurrency(distFromLimit, 4);
+
+      document.getElementById('sliderValueLabel').textContent = `${p.name} (${p.label})`;
+
+      // Aggiorna bottoni attivi
+      document.querySelectorAll('.step-btn').forEach((btn, idx) => {
+        if (idx === state.currentIndex) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+      });
+
+      // Ridisegna i grafici canvas
+      drawCanvasTime();
+      drawCanvasConvergence();
+    }
+
+    // ==========================================
+    // CANVAS 1: EVOLUZIONE NEL TEMPO (GRADINI VS CONTINUA)
+    // ==========================================
+    function drawCanvasTime() {
+      const canvas = document.getElementById('canvasTime');
+      const ctx = canvas.getContext('2d');
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+
+      const w = rect.width;
+      const h = rect.height;
+
+      ctx.clearRect(0, 0, w, h);
+
+      const padLeft = 58;
+      const padRight = 20;
+      const padTop = 20;
+      const padBottom = 34;
+
+      const plotW = w - padLeft - padRight;
+      const plotH = h - padTop - padBottom;
+
+      const C0 = state.C0;
+      const r = state.r;
+      const currentN = PERIODS[state.currentIndex].n;
+      const M_max = C0 * Math.exp(r) * 1.05; // 5% di margine sopra il limite
+      const M_min = C0 * 0.95;
+
+      // Coordinate helper
+      function toX(t) { return padLeft + t * plotW; }
+      function toY(M) { return padTop + plotH - ((M - M_min) / (M_max - M_min)) * plotH; }
+
+      // Griglia e assi
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 1;
+
+      // Linee orizzontali
+      const yTicks = [C0, C0 * (1 + r * 0.5), C0 * (1 + r), C0 * Math.exp(r)];
+      ctx.font = '10px monospace';
+      ctx.fillStyle = '#64748b';
+      ctx.textAlign = 'right';
+
+      yTicks.forEach(val => {
+        const y = toY(val);
+        ctx.beginPath();
+        ctx.moveTo(padLeft, y);
+        ctx.lineTo(w - padRight, y);
+        ctx.stroke();
+        ctx.fillText(Math.round(val) + '€', padLeft - 6, y + 3);
+      });
+
+      // Linee verticali (mesi o trimestri)
+      ctx.textAlign = 'center';
+      for (let m = 0; m <= 12; m += 3) {
+        const t = m / 12;
+        const x = toX(t);
+        ctx.beginPath();
+        ctx.moveTo(x, padTop);
+        ctx.lineTo(x, padTop + plotH);
+        ctx.stroke();
+        ctx.fillText(m + ' m', x, padTop + plotH + 15);
+      }
+
+      // 1. Disegna la curva continua di riferimento (verde smeraldo tratteggiata)
+      ctx.beginPath();
+      ctx.strokeStyle = '#10b981';
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash([4, 4]);
+
+      const stepsCurve = 100;
+      for (let i = 0; i <= stepsCurve; i++) {
+        const t = i / stepsCurve;
+        const M = C0 * Math.exp(r * t);
+        const x = toX(t);
+        const y = toY(M);
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      ctx.stroke();
+      ctx.setLineDash([]); // Ripristina linea continua
+
+      // 2. Disegna la funzione a gradini per il livello discreto attuale (azzurro cielo)
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+
+      if (currentN === Infinity || currentN > 365) {
+        // Se n è molto grande (giornaliero, orario, continuo), i gradini sono indistinguibili dalla curva
+        for (let i = 0; i <= stepsCurve; i++) {
+          const t = i / stepsCurve;
+          const M = calcMontante(C0, r, currentN, t);
+          const x = toX(t);
+          const y = toY(M);
+          if (i === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      } else {
+        // Disegna esplicitamente i gradini
+        const dt = 1 / currentN;
+        let prevM = C0;
+        let prevX = toX(0);
+        let prevY = toY(prevM);
+
+        ctx.moveTo(prevX, prevY);
+
+        for (let k = 1; k <= currentN; k++) {
+          const tStart = (k - 1) * dt;
+          const tEnd = k * dt;
+          const nextM = calcMontante(C0, r, currentN, tEnd);
+
+          const xStart = toX(tStart);
+          const xEnd = toX(tEnd);
+          const yCurrent = toY(prevM);
+          const yNext = toY(nextM);
+
+          // Tratto orizzontale (il capitale resta costante durante il periodo)
+          ctx.lineTo(xEnd, yCurrent);
+          // Tratto verticale (il salto di capitale al momento dell'accredito)
+          ctx.lineTo(xEnd, yNext);
+
+          // Punto luminoso sul salto
+          ctx.fillStyle = '#38bdf8';
+          ctx.fillRect(xEnd - 2, yNext - 2, 4, 4);
+
+          prevM = nextM;
+        }
+        ctx.stroke();
+      }
+
+      // Punto finale a 1 anno
+      const finalM = calcMontante(C0, r, currentN, 1);
+      const finalX = toX(1);
+      const finalY = toY(finalM);
+
+      ctx.fillStyle = '#38bdf8';
+      ctx.beginPath();
+      ctx.arc(finalX, finalY, 5, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+
+      // Punto limite continuo finale
+      const contFinalM = C0 * Math.exp(r);
+      const contFinalY = toY(contFinalM);
+      ctx.fillStyle = '#10b981';
+      ctx.beginPath();
+      ctx.arc(finalX, contFinalY, 4, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    // ==========================================
+    // CANVAS 2: CONVERGENZA & UTILITÀ MARGINALE
+    // ==========================================
+    function drawCanvasConvergence() {
+      const canvas = document.getElementById('canvasConvergence');
+      const ctx = canvas.getContext('2d');
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+
+      const w = rect.width;
+      const h = rect.height;
+
+      ctx.clearRect(0, 0, w, h);
+
+      const padLeft = 56;
+      const padRight = 20;
+      const padTop = 24;
+      const padBottom = 32;
+
+      const plotW = w - padLeft - padRight;
+      const plotH = h - padTop - padBottom;
+
+      const C0 = state.C0;
+      const r = state.r;
+      const numSteps = PERIODS.length;
+      const colW = plotW / (numSteps - 1);
+
+      // Calcola montanti per tutti gli step
+      const montanti = PERIODS.map(p => calcMontante(C0, r, p.n, 1));
+      const M_min = montanti[0] * 0.98;
+      const M_max = C0 * Math.exp(r) * 1.02;
+
+      function toX(idx) { return padLeft + idx * colW; }
+      function toY(M) { return padTop + plotH * 0.65 - ((M - M_min) / (M_max - M_min)) * (plotH * 0.65); }
+
+      // 1. Linea asintotica orizzontale limite (dorata tratteggiata)
+      const limitVal = C0 * Math.exp(r);
+      const limitY = toY(limitVal);
+
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(padLeft, limitY);
+      ctx.lineTo(w - padRight, limitY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.font = '10px font-mono';
+      ctx.fillStyle = '#fbbf24';
+      ctx.textAlign = 'right';
+      ctx.fillText('Limite e: ' + Math.round(limitVal) + '€', w - padRight, limitY - 5);
+
+      // 2. Disegna istogramma del guadagno marginale nella fascia inferiore
+      const barBaseY = padTop + plotH;
+      const maxMarginal = montanti[1] - montanti[0]; // il guadagno semestrale è il massimo
+      const maxBarH = plotH * 0.28;
+
+      ctx.textAlign = 'center';
+      PERIODS.forEach((p, idx) => {
+        const x = toX(idx);
+
+        if (idx > 0) {
+          const marginal = montanti[idx] - montanti[idx - 1];
+          const barH = (marginal / maxMarginal) * maxBarH;
+          const barW = Math.max(6, colW * 0.55);
+
+          // Colore barra
+          ctx.fillStyle = (idx === state.currentIndex) ? '#38bdf8' : 'rgba(245, 158, 11, 0.35)';
+          ctx.fillRect(x - barW / 2, barBaseY - barH, barW, barH);
+        }
+
+        // Etichette asse X
+        ctx.fillStyle = (idx === state.currentIndex) ? '#38bdf8' : '#64748b';
+        ctx.font = (idx === state.currentIndex) ? 'bold 9px sans-serif' : '9px sans-serif';
+        const shortLabels = ['Ann', '6m', '4m', '3m', '1m', '7g', '1g', '1h', '1m', '1s', '∞'];
+        ctx.fillText(shortLabels[idx], x, barBaseY + 14);
+      });
+
+      // 3. Linea di connessione montanti (curva di salita)
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      montanti.forEach((M, idx) => {
+        const x = toX(idx);
+        const y = toY(M);
+        if (idx === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+
+      // 4. Punti montante
+      montanti.forEach((M, idx) => {
+        const x = toX(idx);
+        const y = toY(M);
+        const isCurrent = (idx === state.currentIndex);
+
+        ctx.fillStyle = isCurrent ? '#38bdf8' : '#1e293b';
+        ctx.strokeStyle = isCurrent ? '#ffffff' : '#38bdf8';
+        ctx.lineWidth = isCurrent ? 2.5 : 1.5;
+
+        ctx.beginPath();
+        ctx.arc(x, y, isCurrent ? 5.5 : 3.5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.stroke();
+      });
+
+      // Titolo fascia inferiore
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '9px sans-serif';
+      ctx.fillText('Guadagno Marginale ΔM (crolla a 0)', padLeft, barBaseY - maxBarH - 4);
+    }
+
+    // ==========================================
+    // ANIMAZIONE CONVERGENZA (PLAY / PAUSA)
+    // ==========================================
+    function togglePlay() {
+      state.isPlaying = !state.isPlaying;
+      const btn = document.getElementById('btnPlay');
+      const icon = document.getElementById('playIcon');
+      const label = document.getElementById('playLabel');
+
+      if (state.isPlaying) {
+        icon.textContent = '⏸';
+        label.textContent = 'Pausa';
+        btn.className = "px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 active:scale-95 text-slate-950 font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition whitespace-nowrap shadow";
+        
+        state.playTimer = setInterval(() => {
+          let next = state.currentIndex + 1;
+          if (next >= PERIODS.length) next = 0;
+          selectStepIndex(next);
+        }, 1100);
+      } else {
+        clearInterval(state.playTimer);
+        icon.textContent = '▶';
+        label.textContent = 'Avvia Animazione';
+        btn.className = "px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 active:scale-95 text-slate-950 font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition whitespace-nowrap shadow";
+      }
+    }
+
+    // ==========================================
+    // MODALITÀ (ESPLORAZIONE VS QUIZ)
+    // ==========================================
+    function switchMode(mode) {
+      state.activeMode = mode;
+      const tabExplore = document.getElementById('tabExploreBtn');
+      const tabChallenge = document.getElementById('tabChallengeBtn');
+      const panelExplore = document.getElementById('explorePanel');
+      const panelChallenge = document.getElementById('challengePanel');
+
+      if (mode === 'explore') {
+        tabExplore.className = "px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-sky-600 text-white flex items-center justify-center gap-1.5 shadow";
+        tabChallenge.className = "px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5";
+        panelExplore.classList.remove('hidden');
+        panelChallenge.classList.add('hidden');
+        updateUI();
+      } else {
+        tabChallenge.className = "px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-amber-600 text-white flex items-center justify-center gap-1.5 shadow";
+        tabExplore.className = "px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5";
+        panelExplore.classList.add('hidden');
+        panelChallenge.classList.remove('hidden');
+        if (state.isPlaying) togglePlay(); // Metti in pausa
+        renderQuiz();
+      }
+    }
+
+    // ==========================================
+    // QUIZ PER LA CLASSE
+    // ==========================================
+    const QUIZ_QUESTIONS = [
+      {
+        category: "Intuizione sul Limite",
+        q: "Se depositi 1.000 € al 100% annuo e la banca ti accredita gli interessi ogni microsecondo anziché una volta l'anno, quanto otterrai alla fine dell'anno?",
+        options: [
+          { text: "Un capitale infinito, perché ci sono infiniti accrediti.", correct: false },
+          { text: "Circa 2.718,28 €, pari a 1.000 · e.", correct: true },
+          { text: "Esattamente il doppio, cioè 4.000 €.", correct: false },
+          { text: "Oltre 100.000 € grazie all'interesse composto.", correct: false }
+        ],
+        explanation: "Esatto! Anche se il numero di capitalizzazioni tende a infinito, ogni singolo interesse tende a zero. Il risultato converge al limite finito C₀ · e ≈ 2.718,28 €."
+      },
+      {
+        category: "Utilità Marginale Decrescente",
+        q: "In quale passaggio si ottiene il maggior guadagno extra di capitale?",
+        options: [
+          { text: "Da Annuale (1 anno) a Semestrale (6 mesi)", correct: true },
+          { text: "Da Mensile a Giornaliero", correct: false },
+          { text: "Da Giornaliero a Orario", correct: false },
+          { text: "Da Al Minuto ad Al Secondo", correct: false }
+        ],
+        explanation: "Corretto! Passando da annuale a semestrale si guadagnano ben 250 € in più (su 1.000 € al 100%). I passaggi successivi offrono incrementi via via trascurabili (utilità marginale decrescente)."
+      },
+      {
+        category: "Forma Indeterminata",
+        q: "Quale celebre forma indeterminata descrive il limite della capitalizzazione continua quando n → +∞?",
+        options: [
+          { text: "[ 0 / 0 ]", correct: false },
+          { text: "[ +∞ - ∞ ]", correct: false },
+          { text: "[ 1^∞ ]", correct: true },
+          { text: "[ 0 · ∞ ]", correct: false }
+        ],
+        explanation: "Giusto! La base (1 + r/n) tende a 1, mentre l'esponente n tende a +∞. Questa forma indeterminata genera proprio il limite notevole del numero di Nepero e."
+      },
+      {
+        category: "Applicazione Pratica",
+        q: "Nel mondo finanziario reale e nei modelli matematici (es. derivati, Black-Scholes), perché si preferisce la capitalizzazione continua C₀·eʳᵗ rispetto a quella discreta?",
+        options: [
+          { text: "Perché è una funzione differenziabile ovunque ed è facilissima da derivare e integrare.", correct: true },
+          { text: "Perché fa guadagnare molto più denaro alle banche.", correct: false },
+          { text: "Perché evita del tutto il pagamento delle tasse.", correct: false },
+          { text: "Perché le banche ricalcolano i conti correnti ogni secondo.", correct: false }
+        ],
+        explanation: "Ottimo! La funzione esponenziale eʳᵗ ha la derivata identica alla funzione stessa (a meno della costante r), rendendo i modelli differenziali ed economici incredibilmente eleganti e trattabili analiticamente."
+      },
+      {
+        category: "Storia della Matematica",
+        q: "Chi fu il matematico che scoprì la costante 'e' nel 1683 studiando proprio gli interessi composti continui?",
+        options: [
+          { text: "Isaac Newton", correct: false },
+          { text: "Jacob Bernoulli", correct: true },
+          { text: "René Descartes (Cartesio)", correct: false },
+          { text: "Pitagora", correct: false }
+        ],
+        explanation: "Esatto! Fu Jacob Bernoulli a scoprire che lim (1 + 1/n)ⁿ era compreso tra 2 e 3. Più tardi Eulero assegnò la lettera 'e' e ne calcolò le prime 23 cifre decimali."
+      }
+    ];
+
+    let currentQuizIndex = 0;
+    let quizScore = 0;
+
+    function renderQuiz() {
+      const q = QUIZ_QUESTIONS[currentQuizIndex];
+      document.getElementById('quizStep').textContent = (currentQuizIndex + 1);
+      document.getElementById('quizScore').textContent = quizScore;
+      document.getElementById('quizCategory').textContent = q.category;
+      document.getElementById('quizQuestion').textContent = q.q;
+
+      const optsBox = document.getElementById('quizOptions');
+      optsBox.innerHTML = '';
+
+      const explBox = document.getElementById('quizExplanation');
+      explBox.className = 'hidden';
+
+      q.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = "w-full text-left p-3 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 transition flex items-center justify-between text-xs sm:text-sm text-slate-200";
+        btn.innerHTML = `<span><strong>${String.fromCharCode(65 + idx)}.</strong> ${opt.text}</span>`;
+        btn.onclick = () => selectQuizAnswer(opt, btn);
+        optsBox.appendChild(btn);
+      });
+    }
+
+    function selectQuizAnswer(opt, clickedBtn) {
+      const q = QUIZ_QUESTIONS[currentQuizIndex];
+      const optsBox = document.getElementById('quizOptions');
+      const allBtns = optsBox.querySelectorAll('button');
+
+      allBtns.forEach(b => b.disabled = true);
+
+      const explBox = document.getElementById('quizExplanation');
+      explBox.classList.remove('hidden');
+
+      if (opt.correct) {
+        quizScore += 10;
+        document.getElementById('quizScore').textContent = quizScore;
+        clickedBtn.className = "w-full text-left p-3 rounded-xl bg-emerald-950/60 border border-emerald-500 text-emerald-200 text-xs sm:text-sm font-semibold flex items-center justify-between";
+        explBox.className = "p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/50 text-emerald-300 text-xs sm:text-sm font-medium";
+        explBox.innerHTML = `<strong>Corretto! 🎉</strong> ${q.explanation}`;
+      } else {
+        clickedBtn.className = "w-full text-left p-3 rounded-xl bg-rose-950/60 border border-rose-500 text-rose-200 text-xs sm:text-sm font-semibold flex items-center justify-between";
+        explBox.className = "p-3 rounded-xl bg-rose-950/40 border border-rose-500/50 text-rose-300 text-xs sm:text-sm font-medium";
+        explBox.innerHTML = `<strong>Non esatto.</strong> ${q.explanation}`;
+      }
+    }
+
+    function nextQuizQuestion() {
+      currentQuizIndex = (currentQuizIndex + 1) % QUIZ_QUESTIONS.length;
+      renderQuiz();
+    }
+
+    // Inizializzazione al caricamento e gestione resize
+    window.addEventListener('resize', () => {
+      drawCanvasTime();
+      drawCanvasConvergence();
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      updateUI();
+    });
+  </script>
+</body>
+</html>

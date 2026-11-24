@@ -20,6 +20,15 @@ Puoi provare il laboratorio direttamente online al seguente link:
   - **Esplorazione libera & Animazione automatica:** controllo tramite slider, rotazione a mouse/touch e riproduzione continua.
   - **Modalità Sfida ("Becca i Gradi"):** minigioco con domande a punteggio per mettere alla prova la comprensione degli angoli notevoli e dei valori del seno nei quattro quadranti.
 
+### 2. Dalla Capitalizzazione Composta alla Continua ($M = C_0 \cdot e^{rt}$)
+- **File:** [`laboratorio_capitalizzazione.html`](laboratorio_capitalizzazione.html)
+- **Funzionalità:**
+  - **Esperimento Mentale di Bernoulli & Scenari Reali:** transizione da capitalizzazione annuale ($n=1$) a infinitesima ($n \to \infty$) attraverso 11 livelli discreti (6 mesi, 1 mese, 1 giorno, 1 secondo, continuo).
+  - **Doppio Grafico Dinamico (Canvas 2D):**
+    1. *Evoluzione temporale a gradini vs curva limite continua $e^{rt}$*: visualizza come i gradini discreti si fondono nella curva differenziabile all'aumentare di $n$.
+    2. *Convergenza asintotica & Istogramma utilità marginale*: evidenzia visivamente l'asintoto del capitale e il crollo a zero del guadagno incrementale.
+  - **Animazione Continua & Quiz Interattivo:** simulazione automatica della convergenza e minigioco a risposta multipla con punteggio e spiegazioni didattiche.
+
 ---
 
 ## 🛠️ Come aggiungere nuovi laboratori
