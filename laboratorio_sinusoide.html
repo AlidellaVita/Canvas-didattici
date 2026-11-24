@@ -22,47 +22,55 @@
       width: 100%;
       height: 8px;
       cursor: pointer;
-      background: #334155;
+      background: #E2DDD5;
       border-radius: 9999px;
     }
     input[type=range]::-webkit-slider-thumb {
       height: 24px;
       width: 24px;
       border-radius: 50%;
-      background: #38bdf8;
+      background: #ea580c;
       cursor: pointer;
       -webkit-appearance: none;
       margin-top: -8px;
-      box-shadow: 0 0 10px rgba(56, 189, 248, 0.5);
-      border: 2px solid #ffffff;
+      box-shadow: 0 2px 8px rgba(234, 88, 12, 0.35);
+      border: 3px solid #ffffff;
     }
     canvas {
       touch-action: none;
     }
+    .card-shadow {
+      box-shadow: 0 4px 20px -2px rgba(140, 120, 100, 0.08), 0 2px 6px -1px rgba(140, 120, 100, 0.04);
+    }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col font-sans antialiased">
+<body class="bg-[#FAF7F2] text-slate-800 min-h-screen flex flex-col font-sans antialiased selection:bg-orange-200 selection:text-orange-900">
 
   <!-- Header con selettore modalità -->
-  <header class="bg-slate-900/90 backdrop-blur border-b border-slate-800 sticky top-0 z-40 px-3 py-2.5 sm:px-4 sm:py-3">
+  <header class="bg-white/90 backdrop-blur border-b border-[#EAE3D9] sticky top-0 z-40 px-3 py-2.5 sm:px-4 sm:py-3 shadow-xs">
     <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2.5">
-      <div class="flex items-center gap-2">
-        <div class="w-8 h-8 rounded-lg bg-sky-500/20 border border-sky-400/40 flex items-center justify-center text-sky-400 font-bold text-base">
-          ∼
-        </div>
-        <div>
-          <h1 class="text-base sm:text-lg font-bold tracking-tight text-white flex items-center gap-1.5">
-            La Sinusoide: <span class="text-emerald-400">y = sin(x)</span>
-          </h1>
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="px-2.5 py-1.5 rounded-xl bg-[#F5EFE6] hover:bg-[#EAE2D5] text-slate-700 border border-[#E2DAD0] text-xs font-semibold flex items-center gap-1 transition">
+          <span>←</span> <span class="hidden sm:inline">Catalogo</span>
+        </a>
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 rounded-xl bg-orange-100 border border-orange-300 flex items-center justify-center text-orange-600 font-bold text-base shadow-xs">
+            ∼
+          </div>
+          <div>
+            <h1 class="text-base sm:text-lg font-bold tracking-tight text-slate-900 flex items-center gap-1.5">
+              La Sinusoide: <span class="text-orange-600 font-mono">y = sin(x)</span>
+            </h1>
+          </div>
         </div>
       </div>
 
       <!-- Tasti Modalità -->
-      <div class="grid grid-cols-2 gap-1 bg-slate-950 p-1 rounded-xl border border-slate-800 w-full sm:w-auto">
-        <button id="tabExploreBtn" onclick="switchMode('explore')" class="px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-sky-600 text-white flex items-center justify-center gap-1.5 shadow">
+      <div class="grid grid-cols-2 gap-1 bg-[#F0EBE1] p-1 rounded-xl border border-[#E4DDD0] w-full sm:w-auto">
+        <button id="tabExploreBtn" onclick="switchMode('explore')" class="px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-sky-600 text-white flex items-center justify-center gap-1.5 shadow-sm">
           <span>🔍</span> Esplorazione Libera
         </button>
-        <button id="tabChallengeBtn" onclick="switchMode('challenge')" class="px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5">
+        <button id="tabChallengeBtn" onclick="switchMode('challenge')" class="px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5">
           <span>🎯</span> Sfida "Becca i Gradi"
         </button>
       </div>
@@ -72,21 +80,32 @@
   <main class="flex-1 max-w-5xl w-full mx-auto p-2.5 sm:p-4 flex flex-col gap-3">
 
     <!-- Card Valori Chiave in Primo Piano -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
-      <div class="bg-slate-900 border border-slate-800 rounded-xl p-2">
-        <span class="text-[11px] uppercase tracking-wider text-slate-400 block font-semibold">Angolo x</span>
-        <span id="displayDeg" class="text-xl sm:text-2xl font-black text-sky-400 font-mono">0°</span>
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-center">
+      
+      <!-- Angolo x: Pastello Azzurro Cielo -->
+      <div class="bg-white border border-sky-100 rounded-2xl p-2.5 card-shadow relative overflow-hidden">
+        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-sky-400 to-sky-300"></div>
+        <span class="text-[11px] uppercase tracking-wider text-slate-500 block font-semibold">Angolo x</span>
+        <span id="displayDeg" class="text-xl sm:text-2xl font-black text-sky-700 font-mono mt-0.5 block">0°</span>
       </div>
-      <div class="bg-slate-900 border border-slate-800 rounded-xl p-2">
-        <span class="text-[11px] uppercase tracking-wider text-slate-400 block font-semibold">Altezza Seno y</span>
-        <span id="displaySin" class="text-xl sm:text-2xl font-black text-emerald-400 font-mono">0.000</span>
+
+      <!-- Altezza Seno y: Arancione Intenso Richiesto -->
+      <div class="bg-white border border-orange-100 rounded-2xl p-2.5 card-shadow relative overflow-hidden">
+        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-orange-500 to-amber-400"></div>
+        <span class="text-[11px] uppercase tracking-wider text-slate-500 block font-semibold">Altezza Seno y</span>
+        <span id="displaySin" class="text-xl sm:text-2xl font-black text-orange-600 font-mono mt-0.5 block">0.000</span>
       </div>
-      <div class="bg-slate-900 border border-slate-800 rounded-xl p-2">
-        <span class="text-[11px] uppercase tracking-wider text-slate-400 block font-semibold">Quadrante</span>
-        <span id="displayQuad" class="text-base sm:text-xl font-bold text-amber-400">1° (0° - 90°)</span>
+
+      <!-- Quadrante: Pastello Ambra / Miele -->
+      <div class="bg-white border border-amber-100 rounded-2xl p-2.5 card-shadow relative overflow-hidden">
+        <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-400 to-yellow-300"></div>
+        <span class="text-[11px] uppercase tracking-wider text-slate-500 block font-semibold">Quadrante</span>
+        <span id="displayQuad" class="text-sm sm:text-base font-bold text-amber-700 mt-1 block">1° (0° - 90°)</span>
       </div>
-      <div class="bg-slate-900 border border-slate-800 rounded-xl p-2 flex items-center justify-center">
-        <button id="btnPlay" onclick="togglePlay()" class="w-full h-full py-1.5 px-3 rounded-lg bg-sky-500 hover:bg-sky-400 active:scale-95 text-slate-950 font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition">
+
+      <!-- Pulsante Play / Animazione -->
+      <div class="bg-white border border-[#EAE3D9] rounded-2xl p-2 card-shadow flex items-center justify-center">
+        <button id="btnPlay" onclick="togglePlay()" class="w-full h-full py-2 px-3 rounded-xl bg-sky-600 hover:bg-sky-500 active:scale-95 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition shadow-xs">
           <span id="playIcon">▶</span>
           <span id="playLabel">Avvia Animazione</span>
         </button>
@@ -94,51 +113,70 @@
     </div>
 
     <!-- Pannello Sfida (visibile solo in modalità sfida) -->
-    <div id="challengeBox" class="hidden bg-amber-950/30 border border-amber-600/50 rounded-2xl p-3 sm:p-4 flex flex-col gap-2.5 shadow-lg">
+    <div id="challengeBox" class="hidden bg-amber-50/80 border border-amber-300 rounded-2xl p-3 sm:p-4 flex flex-col gap-2.5 card-shadow">
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <span class="bg-amber-500 text-slate-950 font-black text-xs px-2.5 py-0.5 rounded-md uppercase tracking-wide">
+          <span class="bg-amber-200 text-amber-900 border border-amber-300 font-bold text-xs px-2.5 py-0.5 rounded-md uppercase tracking-wide">
             Domanda <span id="chCurrentStep">1</span>/5
           </span>
-          <span class="text-xs text-amber-200/80">Punteggio: <strong id="chScore" class="text-amber-300 font-bold text-sm">0</strong> p.ti</span>
+          <span class="text-xs text-amber-900 font-semibold">Punteggio: <strong id="chScore" class="text-amber-700 font-bold text-sm">0</strong> p.ti</span>
         </div>
-        <button onclick="newChallengeQuestion()" class="text-xs text-amber-300 underline hover:text-amber-100">
+        <button onclick="newChallengeQuestion()" class="text-xs text-amber-800 underline hover:text-amber-950 font-medium">
           Salta domanda
         </button>
       </div>
 
-      <div class="bg-slate-950/70 p-3 rounded-xl border border-amber-700/40 text-center">
-        <p class="text-xs text-slate-300 uppercase font-semibold">Obiettivo da raggiungere:</p>
-        <p id="targetPrompt" class="text-base sm:text-lg font-black text-amber-300 mt-0.5">
+      <div class="bg-white p-3 rounded-xl border border-amber-200 text-center shadow-2xs">
+        <p class="text-xs text-slate-500 uppercase font-semibold">Obiettivo da raggiungere:</p>
+        <p id="targetPrompt" class="text-base sm:text-lg font-black text-amber-900 mt-0.5">
           Trova un angolo con sin(x) = 0.50
         </p>
       </div>
 
       <div class="flex flex-col sm:flex-row items-center justify-between gap-2">
-        <div id="challengeFeedback" class="text-xs text-slate-300 font-medium">
+        <div id="challengeFeedback" class="text-xs text-slate-600 font-medium">
           Muovi il raggio o il cursore in basso per raggiungere il valore, poi clicca Verifica.
         </div>
-        <button onclick="verifyChallengeAnswer()" class="w-full sm:w-auto px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 active:scale-95 text-slate-950 font-bold text-sm transition shadow-md">
+        <button onclick="verifyChallengeAnswer()" class="w-full sm:w-auto px-5 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 active:scale-95 text-white font-bold text-sm transition shadow-sm">
           ✓ Verifica Posizione
         </button>
       </div>
     </div>
 
     <!-- CANVAS SINCRONIZZATO (Circonferenza + Sinusoide) -->
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-2 sm:p-3 shadow-xl">
-      <div class="relative w-full aspect-[4/3] sm:aspect-[2.1/1] bg-slate-950 rounded-xl overflow-hidden border border-slate-800">
+    <div class="bg-white border border-[#EAE3D9] rounded-2xl p-2.5 sm:p-3.5 card-shadow">
+      <div class="relative w-full aspect-[4/3] sm:aspect-[2.1/1] bg-[#FCFBF8] rounded-xl overflow-hidden border border-[#EAE3D9]">
         <canvas id="synchroCanvas" class="w-full h-full block cursor-crosshair"></canvas>
+      </div>
+      
+      <!-- Legenda Colori Sotto il Canvas -->
+      <div class="flex flex-wrap items-center justify-between gap-2.5 text-[11px] text-slate-600 pt-2.5 px-1 border-t border-[#F0EBE1] mt-2">
+        <div class="flex flex-wrap items-center gap-3 sm:gap-4">
+          <span class="flex items-center gap-1.5">
+            <span class="w-3.5 h-1 bg-[#EAB308] rounded"></span> 
+            <strong class="text-amber-800">Ipotenusa (raggio = 1)</strong>
+          </span>
+          <span class="flex items-center gap-1.5">
+            <span class="w-3.5 h-1 bg-[#EA580C] rounded"></span> 
+            <strong class="text-orange-700">Altezza Seno & Funzione sin(x)</strong>
+          </span>
+          <span class="flex items-center gap-1.5">
+            <span class="w-3 h-0.5 border border-dashed border-[#EA580C]"></span> 
+            <span class="text-slate-500">Proiezione orizzontale</span>
+          </span>
+        </div>
+        <span class="text-slate-400 font-medium hidden sm:inline">Trascina sul cerchio per ruotare</span>
       </div>
     </div>
 
     <!-- Barra Slider Angolo in Gradi -->
-    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3 sm:p-4 shadow-xl flex flex-col gap-2.5">
+    <div class="bg-white border border-[#EAE3D9] rounded-2xl p-3 sm:p-4 card-shadow flex flex-col gap-2.5">
       <div class="flex items-center justify-between text-xs sm:text-sm">
-        <label for="degreeSlider" class="font-bold text-slate-200 flex items-center gap-1.5">
-          <span class="w-2.5 h-2.5 rounded-full bg-sky-400"></span>
+        <label for="degreeSlider" class="font-bold text-slate-800 flex items-center gap-1.5">
+          <span class="w-2.5 h-2.5 rounded-full bg-orange-500"></span>
           Regola Angolo (0° - 360°):
         </label>
-        <span id="sliderValueBadge" class="font-mono text-sky-400 font-bold bg-sky-950 px-2 py-0.5 rounded border border-sky-800 text-sm">
+        <span id="sliderValueBadge" class="font-mono text-orange-700 font-bold bg-orange-50 px-2.5 py-0.5 rounded-lg border border-orange-200 text-sm">
           0°
         </span>
       </div>
@@ -146,50 +184,54 @@
       <input id="degreeSlider" type="range" min="0" max="360" step="1" value="0" class="w-full">
 
       <!-- Tacche notevoli graduate sull'asse dell'input -->
-      <div class="flex justify-between text-[11px] font-mono text-slate-400 px-1 pt-0.5">
-        <span class="text-sky-300 font-bold">0°</span>
+      <div class="flex justify-between text-[11px] font-mono text-slate-500 px-1 pt-0.5">
+        <span class="text-orange-600 font-bold">0°</span>
         <span>90°</span>
         <span>180°</span>
         <span>270°</span>
-        <span class="text-sky-300 font-bold">360°</span>
+        <span class="text-orange-600 font-bold">360°</span>
       </div>
 
       <!-- Scatti rapidi per angoli notevoli -->
-      <div class="pt-2 border-t border-slate-800/80">
-        <span class="text-[11px] text-slate-400 font-semibold block mb-1.5">Scatti rapidi angoli notevoli:</span>
+      <div class="pt-2 border-t border-[#F0EBE1]">
+        <span class="text-[11px] text-slate-500 font-semibold block mb-1.5">Scatti rapidi angoli notevoli:</span>
         <div class="flex flex-wrap gap-1 sm:gap-1.5">
-          <button onclick="setDegree(0)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 active:scale-95 rounded text-xs font-mono font-medium text-slate-200">0°</button>
-          <button onclick="setDegree(30)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 active:scale-95 rounded text-xs font-mono font-medium text-slate-200">30°</button>
-          <button onclick="setDegree(45)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 active:scale-95 rounded text-xs font-mono font-medium text-slate-200">45°</button>
-          <button onclick="setDegree(60)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 active:scale-95 rounded text-xs font-mono font-medium text-slate-200">60°</button>
-          <button onclick="setDegree(90)" class="px-2 py-1 bg-sky-900/60 hover:bg-sky-800 text-sky-300 active:scale-95 rounded text-xs font-mono font-bold">90°</button>
-          <button onclick="setDegree(120)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 active:scale-95 rounded text-xs font-mono font-medium text-slate-200">120°</button>
-          <button onclick="setDegree(135)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 active:scale-95 rounded text-xs font-mono font-medium text-slate-200">135°</button>
-          <button onclick="setDegree(150)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 active:scale-95 rounded text-xs font-mono font-medium text-slate-200">150°</button>
-          <button onclick="setDegree(180)" class="px-2 py-1 bg-sky-900/60 hover:bg-sky-800 text-sky-300 active:scale-95 rounded text-xs font-mono font-bold">180°</button>
-          <button onclick="setDegree(210)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 active:scale-95 rounded text-xs font-mono font-medium text-slate-200">210°</button>
-          <button onclick="setDegree(225)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 active:scale-95 rounded text-xs font-mono font-medium text-slate-200">225°</button>
-          <button onclick="setDegree(240)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 active:scale-95 rounded text-xs font-mono font-medium text-slate-200">240°</button>
-          <button onclick="setDegree(270)" class="px-2 py-1 bg-sky-900/60 hover:bg-sky-800 text-sky-300 active:scale-95 rounded text-xs font-mono font-bold">270°</button>
-          <button onclick="setDegree(300)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 active:scale-95 rounded text-xs font-mono font-medium text-slate-200">300°</button>
-          <button onclick="setDegree(315)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 active:scale-95 rounded text-xs font-mono font-medium text-slate-200">315°</button>
-          <button onclick="setDegree(330)" class="px-2 py-1 bg-slate-800 hover:bg-slate-700 active:scale-95 rounded text-xs font-mono font-medium text-slate-200">330°</button>
-          <button onclick="setDegree(360)" class="px-2 py-1 bg-sky-900/60 hover:bg-sky-800 text-sky-300 active:scale-95 rounded text-xs font-mono font-bold">360°</button>
+          <button onclick="setDegree(0)" class="px-2 py-1 bg-[#F8F6F1] hover:bg-[#EAE2D5] border border-[#E4DED4] active:scale-95 rounded-lg text-xs font-mono font-medium text-slate-700 transition">0°</button>
+          <button onclick="setDegree(30)" class="px-2 py-1 bg-[#F8F6F1] hover:bg-[#EAE2D5] border border-[#E4DED4] active:scale-95 rounded-lg text-xs font-mono font-medium text-slate-700 transition">30°</button>
+          <button onclick="setDegree(45)" class="px-2 py-1 bg-[#F8F6F1] hover:bg-[#EAE2D5] border border-[#E4DED4] active:scale-95 rounded-lg text-xs font-mono font-medium text-slate-700 transition">45°</button>
+          <button onclick="setDegree(60)" class="px-2 py-1 bg-[#F8F6F1] hover:bg-[#EAE2D5] border border-[#E4DED4] active:scale-95 rounded-lg text-xs font-mono font-medium text-slate-700 transition">60°</button>
+          <button onclick="setDegree(90)" class="px-2 py-1 bg-orange-100 hover:bg-orange-200 border border-orange-300 text-orange-900 active:scale-95 rounded-lg text-xs font-mono font-bold transition">90°</button>
+          <button onclick="setDegree(120)" class="px-2 py-1 bg-[#F8F6F1] hover:bg-[#EAE2D5] border border-[#E4DED4] active:scale-95 rounded-lg text-xs font-mono font-medium text-slate-700 transition">120°</button>
+          <button onclick="setDegree(135)" class="px-2 py-1 bg-[#F8F6F1] hover:bg-[#EAE2D5] border border-[#E4DED4] active:scale-95 rounded-lg text-xs font-mono font-medium text-slate-700 transition">135°</button>
+          <button onclick="setDegree(150)" class="px-2 py-1 bg-[#F8F6F1] hover:bg-[#EAE2D5] border border-[#E4DED4] active:scale-95 rounded-lg text-xs font-mono font-medium text-slate-700 transition">150°</button>
+          <button onclick="setDegree(180)" class="px-2 py-1 bg-orange-100 hover:bg-orange-200 border border-orange-300 text-orange-900 active:scale-95 rounded-lg text-xs font-mono font-bold transition">180°</button>
+          <button onclick="setDegree(210)" class="px-2 py-1 bg-[#F8F6F1] hover:bg-[#EAE2D5] border border-[#E4DED4] active:scale-95 rounded-lg text-xs font-mono font-medium text-slate-700 transition">210°</button>
+          <button onclick="setDegree(225)" class="px-2 py-1 bg-[#F8F6F1] hover:bg-[#EAE2D5] border border-[#E4DED4] active:scale-95 rounded-lg text-xs font-mono font-medium text-slate-700 transition">225°</button>
+          <button onclick="setDegree(240)" class="px-2 py-1 bg-[#F8F6F1] hover:bg-[#EAE2D5] border border-[#E4DED4] active:scale-95 rounded-lg text-xs font-mono font-medium text-slate-700 transition">240°</button>
+          <button onclick="setDegree(270)" class="px-2 py-1 bg-orange-100 hover:bg-orange-200 border border-orange-300 text-orange-900 active:scale-95 rounded-lg text-xs font-mono font-bold transition">270°</button>
+          <button onclick="setDegree(300)" class="px-2 py-1 bg-[#F8F6F1] hover:bg-[#EAE2D5] border border-[#E4DED4] active:scale-95 rounded-lg text-xs font-mono font-medium text-slate-700 transition">300°</button>
+          <button onclick="setDegree(315)" class="px-2 py-1 bg-[#F8F6F1] hover:bg-[#EAE2D5] border border-[#E4DED4] active:scale-95 rounded-lg text-xs font-mono font-medium text-slate-700 transition">315°</button>
+          <button onclick="setDegree(330)" class="px-2 py-1 bg-[#F8F6F1] hover:bg-[#EAE2D5] border border-[#E4DED4] active:scale-95 rounded-lg text-xs font-mono font-medium text-slate-700 transition">330°</button>
+          <button onclick="setDegree(360)" class="px-2 py-1 bg-orange-100 hover:bg-orange-200 border border-orange-300 text-orange-900 active:scale-95 rounded-lg text-xs font-mono font-bold transition">360°</button>
         </div>
       </div>
     </div>
 
     <!-- Guida didattica per gli studenti -->
-    <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-3 text-xs text-slate-300 flex items-start gap-2.5">
-      <span class="text-base text-sky-400">💡</span>
+    <div class="bg-white border border-[#EAE3D9] rounded-2xl p-3.5 sm:p-4 text-xs text-slate-700 flex items-start gap-3 card-shadow leading-relaxed">
+      <span class="text-lg text-orange-500">💡</span>
       <p>
-        <strong>Come funziona il legame visivo:</strong> Il punto ruota sulla circonferenza di raggio 1. 
-        Il cateto verticale in <strong class="text-emerald-400">verde</strong> rappresenta la quota <strong>sin(x)</strong>. 
-        La <strong>linea tratteggiata arancione</strong> trasporta esattamente quella quota all'angolo corrispondente sull'asse dei gradi: ecco perché nasce la forma a onda della sinusoide!
+        <strong>Come funziona il legame visivo:</strong> Il punto $P$ ruota sulla circonferenza con l'<strong>ipotenusa</strong> (il raggio unitario) evidenziata in <strong class="text-amber-600 font-bold">giallo dorato</strong>. 
+        Il cateto verticale in <strong class="text-orange-600 font-bold">arancione</strong> rappresenta l'altezza $y = \sin(x)$. 
+        La <strong>linea tratteggiata arancione</strong> trasporta istante per istante questa altezza sul piano cartesiano, disegnando la sinusoide: ecco perché nasce la forma a onda!
       </p>
     </div>
 
   </main>
+
+  <footer class="bg-white border-t border-[#EAE3D9] py-3.5 px-4 text-center text-xs text-slate-500 mt-auto">
+    Canvas Didattici &bull; ITSOS Albe Steiner &bull; Prof. Alberto Bonazzi
+  </footer>
 
   <script>
     /* ========================================================
@@ -249,10 +291,10 @@
       document.getElementById('displaySin').textContent = sinVal.toFixed(3);
 
       // Quadrante
-      let qText = "1° Quadrante (0° - 90°)";
-      if (currentDegree > 90 && currentDegree <= 180) qText = "2° Quadrante (90° - 180°)";
-      else if (currentDegree > 180 && currentDegree <= 270) qText = "3° Quadrante (180° - 270°)";
-      else if (currentDegree > 270 && currentDegree <= 360) qText = "4° Quadrante (270° - 360°)";
+      let qText = "1° Quadrante (0° - 90°) [sin > 0]";
+      if (currentDegree > 90 && currentDegree <= 180) qText = "2° Quadrante (90° - 180°) [sin > 0]";
+      else if (currentDegree > 180 && currentDegree <= 270) qText = "3° Quadrante (180° - 270°) [sin < 0]";
+      else if (currentDegree > 270 && currentDegree <= 360) qText = "4° Quadrante (270° - 360°) [sin < 0]";
       document.getElementById('displayQuad').textContent = qText;
     }
 
@@ -265,15 +307,15 @@
       if (isPlaying) {
         playIcon.textContent = "⏸";
         playLabel.textContent = "Pausa";
-        btn.classList.remove('bg-sky-500');
-        btn.classList.add('bg-amber-500');
+        btn.classList.remove('bg-sky-600', 'hover:bg-sky-500');
+        btn.classList.add('bg-amber-500', 'hover:bg-amber-600');
         lastTimestamp = performance.now();
         animId = requestAnimationFrame(animateStep);
       } else {
         playIcon.textContent = "▶";
         playLabel.textContent = "Avvia Animazione";
-        btn.classList.remove('bg-amber-500');
-        btn.classList.add('bg-sky-500');
+        btn.classList.remove('bg-amber-500', 'hover:bg-amber-600');
+        btn.classList.add('bg-sky-600', 'hover:bg-sky-500');
         cancelAnimationFrame(animId);
       }
     }
@@ -295,6 +337,7 @@
 
     /* ========================================================
        DISEGNO SINCRONIZZATO (CIRCONFERENZA + PIANO CARTESIANO)
+       COLORI: FONDO PANNA, IPOTENUSA GIALLA, SENO ARANCIONE
        ======================================================== */
     function draw() {
       const w = canvas.getBoundingClientRect().width;
@@ -303,10 +346,10 @@
 
       ctx.clearRect(0, 0, w, h);
 
-      // Layout responsive: su schermi verticali o molto stretti proporzione adattata
+      // Layout responsive
       const isNarrow = w < 540;
       const circleAreaWidth = isNarrow ? Math.max(130, w * 0.35) : Math.min(240, w * 0.36);
-      const graphStartX = circleAreaWidth + 20;
+      const graphStartX = circleAreaWidth + 24;
       const graphEndX = w - 16;
       const graphWidth = Math.max(50, graphEndX - graphStartX);
 
@@ -314,7 +357,6 @@
       const radius = Math.min(circleAreaWidth * 0.42, (h / 2) - 24);
       const circleCenterX = circleAreaWidth / 2 + 10;
 
-      // Salviamo la geometria per consentire l'interazione touch sul cerchio
       circleGeometry = { cx: circleCenterX, cy: centerY, r: radius };
 
       const rad = (currentDegree * Math.PI) / 180;
@@ -332,9 +374,9 @@
       // ----------------------------------------------------
       // 1. CIRCONFERENZA GONIOMETRICA
       // ----------------------------------------------------
-      // Assi cartesiani cerchio
+      // Assi cartesiani del cerchio
       ctx.lineWidth = 1;
-      ctx.strokeStyle = '#334155';
+      ctx.strokeStyle = '#D1D5DB';
       ctx.beginPath();
       ctx.moveTo(circleCenterX - radius - 15, centerY);
       ctx.lineTo(circleCenterX + radius + 15, centerY);
@@ -344,60 +386,69 @@
 
       // Cerchio goniometrico
       ctx.lineWidth = 2;
-      ctx.strokeStyle = '#0284c7';
+      ctx.strokeStyle = '#94A3B8';
       ctx.beginPath();
       ctx.arc(circleCenterX, centerY, radius, 0, 2 * Math.PI);
       ctx.stroke();
 
       // Etichette gradi notevoli cerchio
       ctx.font = '10px monospace';
-      ctx.fillStyle = '#64748b';
+      ctx.fillStyle = '#64748B';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.fillText('0°', circleCenterX + radius + 12, centerY);
+      ctx.fillText('0°', circleCenterX + radius + 14, centerY);
       ctx.fillText('90°', circleCenterX, centerY - radius - 10);
       ctx.fillText('180°', circleCenterX - radius - 14, centerY);
       ctx.fillText('270°', circleCenterX, centerY + radius + 10);
 
-      // Settore circolare angolo alpha
+      // Settore circolare angolo alpha (giallo dorato semitrasparente)
       ctx.beginPath();
       ctx.moveTo(circleCenterX, centerY);
       ctx.arc(circleCenterX, centerY, Math.min(28, radius * 0.45), 0, -rad, true);
-      ctx.fillStyle = 'rgba(56, 189, 248, 0.25)';
+      ctx.fillStyle = 'rgba(234, 179, 8, 0.22)';
       ctx.fill();
 
-      // Triangolo rettangolo di riferimento
+      // Cateto adiacente orizzontale (coseno) proiettato sull'asse X
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#94A3B8';
       ctx.beginPath();
-      ctx.strokeStyle = '#475569';
-      ctx.setLineDash([2, 3]);
-      ctx.moveTo(px, centerY);
-      ctx.lineTo(px, py); // Cateto opposto (seno)
+      ctx.moveTo(circleCenterX, centerY);
+      ctx.lineTo(px, centerY);
       ctx.stroke();
-      ctx.setLineDash([]);
 
-      // Segmento Cateto Seno (Verde evidenziato sull'asse Y e nel triangolo)
-      ctx.lineWidth = 3;
-      ctx.strokeStyle = '#10b981';
+      // LINEA DEL SENO (Altezza del punto P rispetto all'asse delle x) -> ARANCIONE INTENSO
+      ctx.lineWidth = 3.5;
+      ctx.strokeStyle = '#EA580C';
+      ctx.lineCap = 'round';
       ctx.beginPath();
       ctx.moveTo(px, centerY);
       ctx.lineTo(px, py);
       ctx.stroke();
+      ctx.lineCap = 'butt';
 
-      // Raggio unitario mobile
-      ctx.lineWidth = 2.5;
-      ctx.strokeStyle = '#38bdf8';
+      // IPOTENUSA DEL CERCHIO (Raggio unitario mobile da O a P) -> GIALLO DORATO CALDO
+      ctx.lineWidth = 3.5;
+      ctx.strokeStyle = '#EAB308';
+      ctx.lineCap = 'round';
       ctx.beginPath();
       ctx.moveTo(circleCenterX, centerY);
       ctx.lineTo(px, py);
       ctx.stroke();
+      ctx.lineCap = 'butt';
 
-      // Punto mobile P sulla circonferenza
-      ctx.fillStyle = '#f8fafc';
+      // Punto di proiezione H sull'asse X
+      ctx.fillStyle = '#EA580C';
       ctx.beginPath();
-      ctx.arc(px, py, 5, 0, 2 * Math.PI);
+      ctx.arc(px, centerY, 3, 0, 2 * Math.PI);
       ctx.fill();
-      ctx.lineWidth = 2;
-      ctx.strokeStyle = '#38bdf8';
+
+      // Punto mobile P sulla circonferenza (Ipotenusa incontra il Seno)
+      ctx.fillStyle = '#FFFFFF';
+      ctx.beginPath();
+      ctx.arc(px, py, 5.5, 0, 2 * Math.PI);
+      ctx.fill();
+      ctx.lineWidth = 2.5;
+      ctx.strokeStyle = '#EA580C';
       ctx.stroke();
 
       // ----------------------------------------------------
@@ -405,7 +456,7 @@
       // ----------------------------------------------------
       // Asse X e Asse Y cartesiano
       ctx.lineWidth = 1;
-      ctx.strokeStyle = '#475569';
+      ctx.strokeStyle = '#94A3B8';
       ctx.beginPath();
       ctx.moveTo(graphStartX, centerY);
       ctx.lineTo(graphEndX, centerY);
@@ -413,21 +464,21 @@
       ctx.lineTo(graphStartX, centerY + radius + 10);
       ctx.stroke();
 
-      // Tacche asse orizzontale SOLO IN GRADI
+      // Tacche asse orizzontale in gradi
       const ticks = [0, 90, 180, 270, 360];
       ctx.font = '10px monospace';
-      ctx.fillStyle = '#94a3b8';
+      ctx.fillStyle = '#64748B';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'top';
 
       ticks.forEach(t => {
         const tx = graphStartX + (t / 360) * graphWidth;
         ctx.beginPath();
-        ctx.strokeStyle = '#475569';
+        ctx.strokeStyle = '#CBD5E1';
         ctx.moveTo(tx, centerY - 4);
         ctx.lineTo(tx, centerY + 4);
         ctx.stroke();
-        ctx.fillText(`${t}°`, tx, centerY + 7);
+        ctx.fillText(`${t}°`, tx, centerY + 6);
       });
 
       // Tacche asse Y (-1, 0, +1)
@@ -437,8 +488,8 @@
       ctx.fillText('0', graphStartX - 6, centerY);
       ctx.fillText('-1', graphStartX - 6, centerY + radius);
 
-      // Linea guida superiore e inferiore a +1 e -1
-      ctx.strokeStyle = '#1e293b';
+      // Linea guida superiore e inferiore a +1 e -1 (tratteggiate)
+      ctx.strokeStyle = '#E2DDD5';
       ctx.setLineDash([3, 4]);
       ctx.beginPath();
       ctx.moveTo(graphStartX, centerY - radius);
@@ -448,9 +499,9 @@
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // Tracciamento completo della sinusoide di riferimento (traccia tenue)
+      // Tracciamento completo della sinusoide (traccia tenue arancione pastello)
       ctx.lineWidth = 1.5;
-      ctx.strokeStyle = 'rgba(16, 185, 129, 0.25)';
+      ctx.strokeStyle = 'rgba(234, 88, 12, 0.22)';
       ctx.beginPath();
       for (let deg = 0; deg <= 360; deg += 2) {
         const xPos = graphStartX + (deg / 360) * graphWidth;
@@ -460,9 +511,10 @@
       }
       ctx.stroke();
 
-      // Tracciamento della curva percorsa fino all'angolo attuale
-      ctx.lineWidth = 3;
-      ctx.strokeStyle = '#10b981';
+      // LINEA DELLA FUNZIONE SENO PERCORSA -> ARANCIONE INTENSO
+      ctx.lineWidth = 3.5;
+      ctx.strokeStyle = '#EA580C';
+      ctx.lineCap = 'round';
       ctx.beginPath();
       for (let deg = 0; deg <= currentDegree; deg += 1) {
         const xPos = graphStartX + (deg / 360) * graphWidth;
@@ -471,11 +523,12 @@
         else ctx.lineTo(xPos, yPos);
       }
       ctx.stroke();
+      ctx.lineCap = 'butt';
 
       // ----------------------------------------------------
-      // 3. COLLEGAMENTO TRATTEGGIATO ISTANTANEO (CIRCOLO -> ONDA)
+      // 3. TRASPORTO QUOTA ISTANTANEA (P -> Q)
       // ----------------------------------------------------
-      ctx.strokeStyle = '#f59e0b';
+      ctx.strokeStyle = 'rgba(234, 88, 12, 0.65)';
       ctx.lineWidth = 1.5;
       ctx.setLineDash([4, 4]);
       ctx.beginPath();
@@ -484,13 +537,21 @@
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // Punto Q sulla sinusoide
-      ctx.fillStyle = '#f59e0b';
+      // Segmento verticale anche nel grafico cartesiano (quota sin(x) sotto a Q)
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = 'rgba(234, 88, 12, 0.35)';
       ctx.beginPath();
-      ctx.arc(qx, qy, 5, 0, 2 * Math.PI);
+      ctx.moveTo(qx, centerY);
+      ctx.lineTo(qx, qy);
+      ctx.stroke();
+
+      // Punto Q sulla sinusoide (Arancione)
+      ctx.fillStyle = '#EA580C';
+      ctx.beginPath();
+      ctx.arc(qx, qy, 5.5, 0, 2 * Math.PI);
       ctx.fill();
       ctx.lineWidth = 2;
-      ctx.strokeStyle = '#ffffff';
+      ctx.strokeStyle = '#FFFFFF';
       ctx.stroke();
     }
 
@@ -504,7 +565,6 @@
       const x = clientX - rect.left - circleGeometry.cx;
       const y = clientY - rect.top - circleGeometry.cy;
 
-      // Invertiamo y perché il canvas ha asse verticale verso il basso
       let rad = Math.atan2(-y, x);
       if (rad < 0) rad += 2 * Math.PI;
       return (rad * 180) / Math.PI;
@@ -517,13 +577,13 @@
       const x = clientX - rect.left - circleGeometry.cx;
       const y = clientY - rect.top - circleGeometry.cy;
       const dist = Math.sqrt(x * x + y * y);
-      return dist <= circleGeometry.r + 30; // area di tocco confortevole
+      return dist <= circleGeometry.r + 30;
     }
 
     function onPointerDown(e) {
       if (isInsideCircle(e)) {
         isDraggingCircle = true;
-        if (isPlaying) togglePlay(); // se animato, ferma l'animazione al tocco
+        if (isPlaying) togglePlay();
         const deg = getPointerAngle(e);
         setDegree(Math.round(deg));
       }
@@ -574,12 +634,12 @@
 
       if (mode === 'explore') {
         challengeBox.classList.add('hidden');
-        tabExploreBtn.className = "px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-sky-600 text-white flex items-center justify-center gap-1.5 shadow";
-        tabChallengeBtn.className = "px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5";
+        tabExploreBtn.className = "px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-sky-600 text-white flex items-center justify-center gap-1.5 shadow-sm";
+        tabChallengeBtn.className = "px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5";
       } else {
         challengeBox.classList.remove('hidden');
-        tabChallengeBtn.className = "px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-amber-600 text-white flex items-center justify-center gap-1.5 shadow";
-        tabExploreBtn.className = "px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-400 hover:text-slate-200 flex items-center justify-center gap-1.5";
+        tabChallengeBtn.className = "px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all bg-amber-600 text-white flex items-center justify-center gap-1.5 shadow-sm";
+        tabExploreBtn.className = "px-3.5 py-1.5 rounded-lg text-xs sm:text-sm font-semibold transition-all text-slate-600 hover:text-slate-900 flex items-center justify-center gap-1.5";
         challengeStep = 1;
         score = 0;
         document.getElementById('chScore').textContent = score;
@@ -594,7 +654,7 @@
       document.getElementById('targetPrompt').textContent = currentQuestion.label;
       const feedback = document.getElementById('challengeFeedback');
       feedback.textContent = "Muovi il raggio o il cursore e premi Verifica.";
-      feedback.className = "text-xs text-slate-300 font-medium";
+      feedback.className = "text-xs text-slate-600 font-medium";
     }
 
     function verifyChallengeAnswer() {
@@ -626,7 +686,7 @@
         score += 20;
         document.getElementById('chScore').textContent = score;
         feedback.textContent = "✓ " + msg;
-        feedback.className = "text-xs text-emerald-400 font-bold";
+        feedback.className = "text-xs text-emerald-700 font-bold";
 
         setTimeout(() => {
           challengeStep++;
@@ -639,7 +699,7 @@
         }, 1200);
       } else {
         feedback.textContent = "✗ " + msg;
-        feedback.className = "text-xs text-rose-400 font-semibold";
+        feedback.className = "text-xs text-rose-700 font-semibold";
       }
     }
 
